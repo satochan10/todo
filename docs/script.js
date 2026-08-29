@@ -184,6 +184,9 @@ function renderTodos() {
     checkbox.type = 'checkbox';
     checkbox.className = 'todo-checkbox';
     checkbox.checked = todo.completed;
+    if (todo.completed) {
+      checkbox.disabled = true;
+    }
     checkbox.addEventListener('change', () => toggleTodo(todo.id));
 
     const textSpan = document.createElement('span');
