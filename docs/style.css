@@ -1,0 +1,288 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: bounce 2s infinite;
+}
+
+header h1 {
+  font-size: 3em;
+  color: #ff6b9d;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+header .subtitle {
+  font-size: 1.2em;
+  color: #c44569;
+  font-weight: bold;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+main {
+  background: white;
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(255, 107, 157, 0.2);
+}
+
+.input-section {
+  margin-bottom: 25px;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+#todoInput {
+  flex: 1;
+  padding: 15px 20px;
+  font-size: 1.1em;
+  border: 3px solid #ffc0e0;
+  border-radius: 20px;
+  background: #fff5f9;
+  font-family: "Comic Sans MS", cursive;
+  transition: all 0.3s ease;
+}
+
+#todoInput:focus {
+  outline: none;
+  border-color: #ff6b9d;
+  box-shadow: 0 0 10px rgba(255, 107, 157, 0.3);
+  background: #fffbfd;
+}
+
+#todoInput::placeholder {
+  color: #ffb3d9;
+}
+
+.add-btn {
+  padding: 15px 25px;
+  font-size: 1.1em;
+  background: linear-gradient(135deg, #ffa500 0%, #ff7f50 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 165, 0, 0.4);
+}
+
+.add-btn:active {
+  transform: translateY(0);
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  background: #e8f4f8;
+  border: 2px solid #b3e5fc;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  color: #0277bd;
+  transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+  background: #81d4fa;
+  border-color: #0277bd;
+  color: white;
+}
+
+.filter-btn:hover {
+  transform: scale(1.05);
+}
+
+.todo-list {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, #e8f4f8 0%, #f0e6ff 100%);
+  border-radius: 20px;
+  margin-bottom: 10px;
+  animation: slideIn 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.todo-item.hidden {
+  display: none;
+}
+
+.todo-item.completed {
+  opacity: 0.6;
+  background: linear-gradient(135deg, #d4e8d4 0%, #e6f0d4 100%);
+}
+
+.todo-checkbox {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  accent-color: #ff6b9d;
+  transform: scale(1.5);
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 1.1em;
+  color: #333;
+  word-break: break-word;
+  transition: all 0.3s ease;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.todo-delete {
+  padding: 8px 12px;
+  background: #ffebee;
+  border: 2px solid #ef5350;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 1em;
+  color: #ef5350;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.todo-delete:hover {
+  background: #ef5350;
+  color: white;
+  transform: scale(1.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  display: none;
+}
+
+.empty-state.show {
+  display: block;
+  animation: slideIn 0.5s ease;
+}
+
+.empty-state p {
+  font-size: 2em;
+  color: #ff6b9d;
+  margin-bottom: 20px;
+}
+
+.footer {
+  text-align: center;
+  border-top: 3px dashed #ffc0e0;
+  padding-top: 20px;
+}
+
+.clear-btn {
+  padding: 12px 20px;
+  font-size: 1em;
+  background: #ffe0b2;
+  border: 2px solid #ff9800;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  color: #e65100;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.clear-btn:hover {
+  background: #ff9800;
+  color: white;
+}
+
+.count {
+  font-size: 1.1em;
+  color: #ff6b9d;
+  font-weight: bold;
+}
+
+#count {
+  font-size: 1.2em;
+  color: #c44569;
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 2.2em;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
+}

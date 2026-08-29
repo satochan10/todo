@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ かわいいTodo - やることリスト ✨</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌟 やることリスト 🌟</h1>
+      <p class="subtitle">今日もがんばろう！</p>
+    </header>
+
+    <main>
+      <div class="input-section">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="todoInput"
+            placeholder="やることを入力してね... ✏️"
+            autocomplete="off"
+          >
+          <button id="addBtn" class="add-btn">➕ 追加</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">すべて</button>
+        <button class="filter-btn" data-filter="active">残ってる</button>
+        <button class="filter-btn" data-filter="completed">完了</button>
+      </div>
+
+      <ul id="todoList" class="todo-list">
+        <!-- 動的に追加されます -->
+      </ul>
+
+      <div id="emptyState" class="empty-state">
+        <p>🎉 すべて完了！お疲れ様！</p>
+      </div>
+
+      <footer class="footer">
+        <button id="clearBtn" class="clear-btn">🗑️ 完了したのを削除</button>
+        <p class="count">残り: <span id="count">0</span>個</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
