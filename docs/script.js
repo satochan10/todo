@@ -1,5 +1,19 @@
+// Firebase設定
+const firebaseConfig = {
+  apiKey: "AIzaSyC9-N7Z3iOizGqfPVj0-Nz2BH_neZBoPMA",
+  authDomain: "todo-app-1fac3.firebaseapp.com",
+  projectId: "todo-app-1fac3",
+  storageBucket: "todo-app-1fac3.firebasestorage.app",
+  messagingSenderId: "469318704626",
+  appId: "1:469318704626:web:948d455d9d32fb29285f6b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 let todos = [];
 let currentFilter = 'all';
+let isLoading = false;
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -9,70 +23,92 @@ const clearBtn = document.getElementById('clearBtn');
 const countDisplay = document.getElementById('count');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
-// ローカルストレージから読み込み
+// Firestoreからリアルタイム読み込み
 function loadTodos() {
-  const saved = localStorage.getItem('todos');
-  if (saved) {
-    todos = JSON.parse(saved);
-  }
+  isLoading = true;
+  db.collection('todos').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+    todos = [];
+    snapshot.forEach(doc => {
+      todos.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    isLoading = false;
+    renderTodos();
+  });
 }
 
-// ローカルストレージに保存
-function saveTodos() {
-  localStorage.setItem('todos', JSON.stringify(todos));
+// Firestoreに保存
+async function saveTodo(todo) {
+  await db.collection('todos').add({
+    text: todo.text,
+    completed: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
 }
 
 // Todoを追加
-function addTodo() {
+async function addTodo() {
   const text = todoInput.value.trim();
   if (text === '') {
     alert('やることを入力してね！ ✏️');
     return;
   }
 
-  const todo = {
-    id: Date.now(),
-    text: text,
-    completed: false,
-    createdAt: new Date().toLocaleString('ja-JP')
-  };
-
-  todos.push(todo);
-  saveTodos();
-  renderTodos();
-  todoInput.value = '';
-  todoInput.focus();
+  try {
+    await db.collection('todos').add({
+      text: text,
+      completed: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    todoInput.value = '';
+    todoInput.focus();
+  } catch (error) {
+    console.error('エラー:', error);
+    alert('エラーが発生しました');
+  }
 }
 
 // Todoを削除
-function deleteTodo(id) {
-  todos = todos.filter(todo => todo.id !== id);
-  saveTodos();
-  renderTodos();
+async function deleteTodo(id) {
+  try {
+    await db.collection('todos').doc(id).delete();
+  } catch (error) {
+    console.error('削除エラー:', error);
+  }
 }
 
 // Todoの完了状態を切り替え
-function toggleTodo(id) {
+async function toggleTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (todo) {
-    todo.completed = !todo.completed;
-    saveTodos();
-    renderTodos();
+    try {
+      await db.collection('todos').doc(id).update({
+        completed: !todo.completed
+      });
+    } catch (error) {
+      console.error('更新エラー:', error);
+    }
   }
 }
 
 // 完了したTodoをすべて削除
-function clearCompleted() {
-  const completedCount = todos.filter(t => t.completed).length;
-  if (completedCount === 0) {
+async function clearCompleted() {
+  const completedTodos = todos.filter(t => t.completed);
+  if (completedTodos.length === 0) {
     alert('完了したタスクはないよ！ 🎉');
     return;
   }
 
-  if (confirm(`${completedCount}個の完了したタスクを削除してもいい？`)) {
-    todos = todos.filter(todo => !todo.completed);
-    saveTodos();
-    renderTodos();
+  if (confirm(`${completedTodos.length}個の完了したタスクを削除してもいい？`)) {
+    try {
+      for (const todo of completedTodos) {
+        await db.collection('todos').doc(todo.id).delete();
+      }
+    } catch (error) {
+      console.error('削除エラー:', error);
+    }
   }
 }
 
@@ -155,5 +191,6 @@ filterBtns.forEach(btn => {
 });
 
 // 初期化
-loadTodos();
-renderTodos();
+document.addEventListener('DOMContentLoaded', () => {
+  loadTodos();
+});
