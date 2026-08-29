@@ -295,7 +295,13 @@ window.deleteTodo = deleteTodo;
 window.toggleTodo = toggleTodo;
 
 // 初期化
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 最初にsettingsドキュメントが存在するか確認
+  const settingsDoc = await db.collection('settings').doc('points').get();
+  if (!settingsDoc.exists) {
+    // 存在しなければ作成
+    await db.collection('settings').doc('points').set({ count: 0 });
+  }
   loadPoints();
   loadTodos();
 });
