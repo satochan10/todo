@@ -27,6 +27,26 @@ header {
   position: relative;
   margin-bottom: 10px;
   animation: bounce 2s infinite;
+  gap: 20px;
+}
+
+.reload-btn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  padding: 10px;
+}
+
+.reload-btn:hover {
+  transform: rotate(180deg);
+}
+
+.reload-btn:active {
+  transform: rotate(180deg) scale(0.9);
 }
 
 header h1 {

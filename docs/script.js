@@ -30,6 +30,7 @@ const passwordInput = document.getElementById('passwordInput');
 const passwordOkBtn = document.getElementById('passwordOkBtn');
 const passwordCancelBtn = document.getElementById('passwordCancelBtn');
 const pointsCount = document.getElementById('pointsCount');
+const reloadBtn = document.getElementById('reloadBtn');
 
 // ポイント管理
 function loadPoints() {
@@ -291,6 +292,10 @@ passwordInput.addEventListener('keypress', e => {
   if (e.key === 'Enter') {
     checkPassword();
   }
+});
+
+reloadBtn.addEventListener('click', () => {
+  location.reload();
 });
 
 // グローバルスコープに関数を登録（HTMLから呼び出せるように）
