@@ -72,10 +72,13 @@ async function addTodo() {
 
 // Todoを削除
 async function deleteTodo(id) {
+  console.log('Delete called with id:', id);
   try {
     await db.collection('todos').doc(id).delete();
+    console.log('Deleted successfully');
   } catch (error) {
     console.error('削除エラー:', error);
+    alert('削除に失敗しました: ' + error.message);
   }
 }
 
@@ -141,10 +144,10 @@ function renderTodos() {
         type="checkbox"
         class="todo-checkbox"
         ${todo.completed ? 'checked' : ''}
-        onchange="toggleTodo(${todo.id})"
+        onchange="toggleTodo('${todo.id}')"
       >
       <span class="todo-text">${escapeHtml(todo.text)}</span>
-      <button class="todo-delete" onclick="deleteTodo(${todo.id})">🗑️ 削除</button>
+      <button class="todo-delete" onclick="deleteTodo('${todo.id}')">🗑️ 削除</button>
     `;
 
     todoList.appendChild(li);
@@ -189,6 +192,10 @@ filterBtns.forEach(btn => {
     renderTodos();
   });
 });
+
+// グローバルスコープに関数を登録（HTMLから呼び出せるように）
+window.deleteTodo = deleteTodo;
+window.toggleTodo = toggleTodo;
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
