@@ -139,17 +139,24 @@ function renderTodos() {
     const li = document.createElement('li');
     li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
 
-    li.innerHTML = `
-      <input
-        type="checkbox"
-        class="todo-checkbox"
-        ${todo.completed ? 'checked' : ''}
-        onchange="toggleTodo('${todo.id}')"
-      >
-      <span class="todo-text">${escapeHtml(todo.text)}</span>
-      <button class="todo-delete" onclick="deleteTodo('${todo.id}')">🗑️ 削除</button>
-    `;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'todo-checkbox';
+    checkbox.checked = todo.completed;
+    checkbox.addEventListener('change', () => toggleTodo(todo.id));
 
+    const textSpan = document.createElement('span');
+    textSpan.className = 'todo-text';
+    textSpan.textContent = todo.text;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'todo-delete';
+    deleteBtn.textContent = '🗑️ 削除';
+    deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+
+    li.appendChild(checkbox);
+    li.appendChild(textSpan);
+    li.appendChild(deleteBtn);
     todoList.appendChild(li);
   });
 
