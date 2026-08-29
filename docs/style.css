@@ -17,8 +17,15 @@ body {
 }
 
 header {
-  text-align: center;
   margin-bottom: 30px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 10px;
   animation: bounce 2s infinite;
 }
 
@@ -26,7 +33,22 @@ header h1 {
   font-size: 3em;
   color: #ff6b9d;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
+  margin: 0;
+}
+
+.settings-btn {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  padding: 10px;
+}
+
+.settings-btn:hover {
+  transform: rotate(20deg);
 }
 
 header .subtitle {
@@ -210,6 +232,123 @@ main {
   background: #ef5350;
   color: white;
   transform: scale(1.1);
+}
+
+.todo-delete.hidden {
+  display: none;
+}
+
+/* モーダルスタイル */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: white;
+  padding: 40px;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  color: #ff6b9d;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  color: #666;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+#passwordInput {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1em;
+  border: 2px solid #ffc0e0;
+  border-radius: 15px;
+  font-family: "Comic Sans MS", cursive;
+  margin-bottom: 20px;
+}
+
+#passwordInput:focus {
+  outline: none;
+  border-color: #ff6b9d;
+  box-shadow: 0 0 10px rgba(255, 107, 157, 0.3);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#passwordOkBtn {
+  background: linear-gradient(135deg, #ffa500 0%, #ff7f50 100%);
+  color: white;
+}
+
+#passwordOkBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+}
+
+#passwordCancelBtn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+#passwordCancelBtn:hover {
+  background: #c0c0c0;
 }
 
 .empty-state {

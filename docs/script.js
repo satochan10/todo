@@ -14,6 +14,7 @@ const db = firebase.firestore();
 let todos = [];
 let currentFilter = 'all';
 let isLoading = false;
+let isAdminMode = false;
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -22,6 +23,11 @@ const emptyState = document.getElementById('emptyState');
 const clearBtn = document.getElementById('clearBtn');
 const countDisplay = document.getElementById('count');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const settingsBtn = document.getElementById('settingsBtn');
+const passwordModal = document.getElementById('passwordModal');
+const passwordInput = document.getElementById('passwordInput');
+const passwordOkBtn = document.getElementById('passwordOkBtn');
+const passwordCancelBtn = document.getElementById('passwordCancelBtn');
 
 // Firestoreからリアルタイム読み込み
 function loadTodos() {
@@ -151,6 +157,9 @@ function renderTodos() {
 
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'todo-delete';
+    if (!isAdminMode) {
+      deleteBtn.classList.add('hidden');
+    }
     deleteBtn.textContent = '🗑️ 削除';
     deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
 
@@ -181,6 +190,31 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
+// パスワードモーダル
+function showPasswordModal() {
+  passwordModal.classList.add('show');
+  passwordInput.value = '';
+  passwordInput.focus();
+}
+
+function hidePasswordModal() {
+  passwordModal.classList.remove('show');
+}
+
+function checkPassword() {
+  const password = passwordInput.value;
+  if (password === '2019') {
+    isAdminMode = true;
+    hidePasswordModal();
+    renderTodos();
+    alert('管理者モードに切り替わりました');
+  } else {
+    alert('パスワードが間違っています');
+    passwordInput.value = '';
+    passwordInput.focus();
+  }
+}
+
 // イベントリスナー
 addBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', e => {
@@ -198,6 +232,15 @@ filterBtns.forEach(btn => {
     currentFilter = btn.dataset.filter;
     renderTodos();
   });
+});
+
+settingsBtn.addEventListener('click', showPasswordModal);
+passwordOkBtn.addEventListener('click', checkPassword);
+passwordCancelBtn.addEventListener('click', hidePasswordModal);
+passwordInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    checkPassword();
+  }
 });
 
 // グローバルスコープに関数を登録（HTMLから呼び出せるように）

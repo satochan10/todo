@@ -9,9 +9,25 @@
 <body>
   <div class="container">
     <header>
-      <h1>🌟 やることリスト 🌟</h1>
+      <div class="header-top">
+        <h1>🌟 やることリスト 🌟</h1>
+        <button id="settingsBtn" class="settings-btn">⚙️</button>
+      </div>
       <p class="subtitle">今日もがんばろう！</p>
     </header>
+
+    <!-- パスワード入力モーダル -->
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <h2>管理者モード</h2>
+        <p>パスワードを入力してください</p>
+        <input type="password" id="passwordInput" placeholder="パスワード" autocomplete="off">
+        <div class="modal-buttons">
+          <button id="passwordOkBtn">OK</button>
+          <button id="passwordCancelBtn">キャンセル</button>
+        </div>
+      </div>
+    </div>
 
     <main>
       <div class="input-section">
