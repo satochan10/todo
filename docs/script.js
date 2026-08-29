@@ -33,9 +33,9 @@ const pointsCount = document.getElementById('pointsCount');
 
 // ポイント管理
 function loadPoints() {
-  db.collection('settings').doc('points').onSnapshot(doc => {
+  db.collection('app').doc('settings').onSnapshot(doc => {
     if (doc.exists) {
-      points = doc.data().count || 0;
+      points = doc.data().points || 0;
     } else {
       points = 0;
     }
@@ -60,9 +60,9 @@ function updatePointsDisplay() {
 
 async function savePoints() {
   try {
-    await db.collection('settings').doc('points').set({
-      count: points
-    });
+    await db.collection('app').doc('settings').set({
+      points: points
+    }, { merge: true });
     console.log('ポイント保存成功:', points);
   } catch (error) {
     console.error('ポイント保存エラー:', error);
