@@ -18,6 +18,9 @@ let isAdminMode = false;
 let points = 0;
 let draggedTodo = null;
 
+// キャラクター進化ステージ（海の生き物）
+const characters = ['🐚', '🦀', '🦞', '🐙', '🦑', '🐠', '🐡', '🦈', '🐳', '👑'];
+
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
 const todoList = document.getElementById('todoList');
@@ -57,7 +60,13 @@ async function addPoints(amount = 1) {
 }
 
 function updatePointsDisplay() {
+  const level = Math.floor(points / 5);
+  const character = characters[Math.min(level, characters.length - 1)];
   pointsCount.textContent = points;
+  const characterSpan = document.getElementById('characterSpan');
+  if (characterSpan) {
+    characterSpan.textContent = character;
+  }
 }
 
 async function savePoints() {
