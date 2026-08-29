@@ -57,6 +57,43 @@ header .subtitle {
   font-weight: bold;
 }
 
+.points-display {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.points-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc700 100%);
+  border: 4px solid #ff6b6b;
+  border-radius: 30px;
+  padding: 20px 40px;
+  display: inline-block;
+  font-size: 2.2em;
+  font-weight: bold;
+  color: #d63031;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+#pointsCount {
+  color: #ff6b6b;
+  font-size: 1.3em;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 60px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 @keyframes bounce {
   0%, 100% {
     transform: translateY(0);

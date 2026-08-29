@@ -15,6 +15,7 @@ let todos = [];
 let currentFilter = 'all';
 let isLoading = false;
 let isAdminMode = false;
+let points = 0;
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -28,6 +29,35 @@ const passwordModal = document.getElementById('passwordModal');
 const passwordInput = document.getElementById('passwordInput');
 const passwordOkBtn = document.getElementById('passwordOkBtn');
 const passwordCancelBtn = document.getElementById('passwordCancelBtn');
+const pointsCount = document.getElementById('pointsCount');
+
+// ポイント管理
+function loadPoints() {
+  db.collection('settings').doc('points').onSnapshot(doc => {
+    if (doc.exists) {
+      points = doc.data().count || 0;
+    } else {
+      points = 0;
+    }
+    updatePointsDisplay();
+  });
+}
+
+function addPoints(amount = 1) {
+  points += amount;
+  updatePointsDisplay();
+  savePoints();
+}
+
+function updatePointsDisplay() {
+  pointsCount.textContent = points;
+}
+
+function savePoints() {
+  db.collection('settings').doc('points').set({
+    count: points
+  });
+}
 
 // Firestoreからリアルタイム読み込み
 function loadTodos() {
@@ -93,9 +123,14 @@ async function toggleTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (todo) {
     try {
+      const newStatus = !todo.completed;
       await db.collection('todos').doc(id).update({
-        completed: !todo.completed
+        completed: newStatus
       });
+      // 完了したらポイント加算
+      if (newStatus && !todo.completed) {
+        addPoints(1);
+      }
     } catch (error) {
       console.error('更新エラー:', error);
     }
@@ -249,5 +284,6 @@ window.toggleTodo = toggleTodo;
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
+  loadPoints();
   loadTodos();
 });
