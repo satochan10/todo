@@ -33,15 +33,18 @@ const pointsCount = document.getElementById('pointsCount');
 
 // ポイント管理
 function loadPoints() {
-  db.collection('settings').doc('points').onSnapshot(doc => {
+  db.collection('app').doc('settings').onSnapshot(doc => {
     if (doc.exists) {
-      points = doc.data().count || 0;
+      points = doc.data().points || 0;
     } else {
       points = 0;
     }
     updatePointsDisplay();
+    console.log('ポイント読み込み:', points);
   }, error => {
     console.error('ポイント読み込みエラー:', error);
+    points = 0;
+    updatePointsDisplay();
   });
 }
 
@@ -57,12 +60,21 @@ function updatePointsDisplay() {
 
 async function savePoints() {
   try {
-    await db.collection('settings').doc('points').set({
-      count: points
-    }, { merge: true });
+    await db.collection('app').doc('settings').update({
+      points: points
+    });
     console.log('ポイント保存成功:', points);
   } catch (error) {
     console.error('ポイント保存エラー:', error);
+    // ドキュメントが存在しない場合は作成
+    try {
+      await db.collection('app').doc('settings').set({
+        points: points
+      }, { merge: true });
+      console.log('ポイント新規作成:', points);
+    } catch (err) {
+      console.error('ポイント新規作成エラー:', err);
+    }
   }
 }
 
@@ -296,18 +308,19 @@ window.toggleTodo = toggleTodo;
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-  loadPoints();
-  loadTodos();
-
-  // 最初にsettingsドキュメントが存在するか確認
-  db.collection('settings').doc('points').get().then(doc => {
+  // 最初にappドキュメントが存在するか確認
+  db.collection('app').doc('settings').get().then(doc => {
     if (!doc.exists) {
       // 存在しなければ作成
-      db.collection('settings').doc('points').set({ count: 0 }).catch(err => {
-        console.error('settings作成エラー:', err);
+      db.collection('app').doc('settings').set({ points: 0, createdAt: new Date() }).catch(err => {
+        console.error('app settings作成エラー:', err);
       });
     }
+    loadPoints();
+    loadTodos();
   }).catch(err => {
-    console.error('settings確認エラー:', err);
+    console.error('app settings確認エラー:', err);
+    loadPoints();
+    loadTodos();
   });
 });
