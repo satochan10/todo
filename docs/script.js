@@ -74,13 +74,20 @@ async function savePoints() {
 // Firestoreからリアルタイム読み込み
 function loadTodos() {
   isLoading = true;
-  db.collection('todos').orderBy('order', 'asc').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+  db.collection('todos').onSnapshot(snapshot => {
     todos = [];
     snapshot.forEach(doc => {
       todos.push({
         id: doc.id,
         ...doc.data()
       });
+    });
+    // orderフィールドがあればそれでソート、なければcreatedAtでソート
+    todos.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
     });
     isLoading = false;
     renderTodos();
