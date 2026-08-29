@@ -40,23 +40,30 @@ function loadPoints() {
       points = 0;
     }
     updatePointsDisplay();
+  }, error => {
+    console.error('ポイント読み込みエラー:', error);
   });
 }
 
-function addPoints(amount = 1) {
+async function addPoints(amount = 1) {
   points += amount;
   updatePointsDisplay();
-  savePoints();
+  await savePoints();
 }
 
 function updatePointsDisplay() {
   pointsCount.textContent = points;
 }
 
-function savePoints() {
-  db.collection('settings').doc('points').set({
-    count: points
-  });
+async function savePoints() {
+  try {
+    await db.collection('settings').doc('points').set({
+      count: points
+    }, { merge: true });
+    console.log('ポイント保存成功:', points);
+  } catch (error) {
+    console.error('ポイント保存エラー:', error);
+  }
 }
 
 // Firestoreからリアルタイム読み込み
@@ -122,15 +129,17 @@ async function deleteTodo(id) {
 async function toggleTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (todo) {
+    // 既に完了しているタスクは状態を変更できない
+    if (todo.completed) {
+      return;
+    }
+
     try {
-      const newStatus = !todo.completed;
       await db.collection('todos').doc(id).update({
-        completed: newStatus
+        completed: true
       });
       // 完了したらポイント加算
-      if (newStatus && !todo.completed) {
-        addPoints(1);
-      }
+      addPoints(1);
     } catch (error) {
       console.error('更新エラー:', error);
     }
