@@ -33,9 +33,9 @@ const pointsCount = document.getElementById('pointsCount');
 
 // ポイント管理
 function loadPoints() {
-  db.collection('app').doc('settings').onSnapshot(doc => {
+  db.collection('settings').doc('points').onSnapshot(doc => {
     if (doc.exists) {
-      points = doc.data().points || 0;
+      points = doc.data().count || 0;
     } else {
       points = 0;
     }
@@ -60,21 +60,12 @@ function updatePointsDisplay() {
 
 async function savePoints() {
   try {
-    await db.collection('app').doc('settings').update({
-      points: points
+    await db.collection('settings').doc('points').set({
+      count: points
     });
     console.log('ポイント保存成功:', points);
   } catch (error) {
     console.error('ポイント保存エラー:', error);
-    // ドキュメントが存在しない場合は作成
-    try {
-      await db.collection('app').doc('settings').set({
-        points: points
-      }, { merge: true });
-      console.log('ポイント新規作成:', points);
-    } catch (err) {
-      console.error('ポイント新規作成エラー:', err);
-    }
   }
 }
 
@@ -308,19 +299,6 @@ window.toggleTodo = toggleTodo;
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-  // 最初にappドキュメントが存在するか確認
-  db.collection('app').doc('settings').get().then(doc => {
-    if (!doc.exists) {
-      // 存在しなければ作成
-      db.collection('app').doc('settings').set({ points: 0, createdAt: new Date() }).catch(err => {
-        console.error('app settings作成エラー:', err);
-      });
-    }
-    loadPoints();
-    loadTodos();
-  }).catch(err => {
-    console.error('app settings確認エラー:', err);
-    loadPoints();
-    loadTodos();
-  });
+  loadPoints();
+  loadTodos();
 });
