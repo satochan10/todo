@@ -295,13 +295,19 @@ window.deleteTodo = deleteTodo;
 window.toggleTodo = toggleTodo;
 
 // 初期化
-document.addEventListener('DOMContentLoaded', async () => {
-  // 最初にsettingsドキュメントが存在するか確認
-  const settingsDoc = await db.collection('settings').doc('points').get();
-  if (!settingsDoc.exists) {
-    // 存在しなければ作成
-    await db.collection('settings').doc('points').set({ count: 0 });
-  }
+document.addEventListener('DOMContentLoaded', () => {
   loadPoints();
   loadTodos();
+
+  // 最初にsettingsドキュメントが存在するか確認
+  db.collection('settings').doc('points').get().then(doc => {
+    if (!doc.exists) {
+      // 存在しなければ作成
+      db.collection('settings').doc('points').set({ count: 0 }).catch(err => {
+        console.error('settings作成エラー:', err);
+      });
+    }
+  }).catch(err => {
+    console.error('settings確認エラー:', err);
+  });
 });
