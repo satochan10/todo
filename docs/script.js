@@ -16,6 +16,7 @@ let currentFilter = 'all';
 let isLoading = false;
 let isAdminMode = false;
 let points = 0;
+let draggedTodo = null;
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -73,7 +74,7 @@ async function savePoints() {
 // Firestoreからリアルタイム読み込み
 function loadTodos() {
   isLoading = true;
-  db.collection('todos').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+  db.collection('todos').orderBy('order', 'asc').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
     todos = [];
     snapshot.forEach(doc => {
       todos.push({
@@ -192,6 +193,8 @@ function renderTodos() {
   filteredTodos.forEach(todo => {
     const li = document.createElement('li');
     li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    li.draggable = true;
+    li.dataset.todoId = todo.id;
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -217,6 +220,12 @@ function renderTodos() {
     li.appendChild(checkbox);
     li.appendChild(textSpan);
     li.appendChild(deleteBtn);
+
+    li.addEventListener('dragstart', handleDragStart);
+    li.addEventListener('dragover', handleDragOver);
+    li.addEventListener('drop', handleDrop);
+    li.addEventListener('dragend', handleDragEnd);
+
     todoList.appendChild(li);
   });
 
@@ -227,6 +236,56 @@ function renderTodos() {
 function updateCount() {
   const activeCount = todos.filter(todo => !todo.completed).length;
   countDisplay.textContent = activeCount;
+}
+
+// ドラッグアンドドロップ
+function handleDragStart(e) {
+  draggedTodo = todos.find(t => t.id === this.dataset.todoId);
+  this.style.opacity = '0.5';
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.style.borderTop = '3px solid #ff6b9d';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const targetTodo = todos.find(t => t.id === this.dataset.todoId);
+
+  if (draggedTodo && targetTodo && draggedTodo.id !== targetTodo.id) {
+    const draggedIndex = todos.indexOf(draggedTodo);
+    const targetIndex = todos.indexOf(targetTodo);
+
+    todos.splice(draggedIndex, 1);
+    todos.splice(targetIndex, 0, draggedTodo);
+
+    saveTodosOrder();
+    renderTodos();
+  }
+}
+
+function handleDragEnd(e) {
+  this.style.opacity = '1';
+  this.style.borderTop = 'none';
+  document.querySelectorAll('.todo-item').forEach(item => {
+    item.style.borderTop = 'none';
+  });
+}
+
+async function saveTodosOrder() {
+  const batch = db.batch();
+  todos.forEach((todo, index) => {
+    const docRef = db.collection('todos').doc(todo.id);
+    batch.update(docRef, { order: index });
+  });
+  await batch.commit().catch(error => {
+    console.error('順序保存エラー:', error);
+  });
 }
 
 // XSS対策
