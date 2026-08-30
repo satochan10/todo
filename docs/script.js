@@ -260,6 +260,9 @@ function renderTodos() {
     li.addEventListener('dragover', handleDragOver);
     li.addEventListener('drop', handleDrop);
     li.addEventListener('dragend', handleDragEnd);
+    li.addEventListener('touchstart', handleTouchStart);
+    li.addEventListener('touchmove', handleTouchMove);
+    li.addEventListener('touchend', handleTouchEnd);
 
     todoList.appendChild(li);
   });
@@ -310,6 +313,59 @@ function handleDragEnd(e) {
   document.querySelectorAll('.todo-item').forEach(item => {
     item.style.borderTop = 'none';
   });
+}
+
+// タッチイベント対応
+let touchItem = null;
+function handleTouchStart(e) {
+  touchItem = this;
+  draggedTodo = todos.find(t => t.id === this.dataset.todoId);
+  this.style.opacity = '0.5';
+}
+
+function handleTouchMove(e) {
+  if (!touchItem) return;
+  e.preventDefault();
+
+  const touch = e.touches[0];
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+  if (element && element.classList.contains('todo-item') && element !== touchItem) {
+    document.querySelectorAll('.todo-item').forEach(item => {
+      item.style.borderTop = 'none';
+    });
+    element.style.borderTop = '3px solid #ff6b9d';
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!touchItem) return;
+
+  const touch = e.changedTouches[0];
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+  if (element && element.classList.contains('todo-item') && element !== touchItem) {
+    const targetTodo = todos.find(t => t.id === element.dataset.todoId);
+
+    if (draggedTodo && targetTodo && draggedTodo.id !== targetTodo.id) {
+      const draggedIndex = todos.indexOf(draggedTodo);
+      const targetIndex = todos.indexOf(targetTodo);
+
+      todos.splice(draggedIndex, 1);
+      todos.splice(targetIndex, 0, draggedTodo);
+
+      saveTodosOrder();
+      renderTodos();
+    }
+  }
+
+  touchItem.style.opacity = '1';
+  touchItem.style.borderTop = 'none';
+  document.querySelectorAll('.todo-item').forEach(item => {
+    item.style.borderTop = 'none';
+  });
+  touchItem = null;
+  draggedTodo = null;
 }
 
 async function saveTodosOrder() {
