@@ -19,7 +19,11 @@ let points = 0;
 let draggedTodo = null;
 
 // キャラクター進化ステージ（海の生き物）
-const characters = ['🐚', '🦀', '🦞', '🐙', '🦑', '🐠', '🐡', '🦈', '🐳', '👑'];
+const characters = [
+  '🐚', '🦀', '🦞', '🐙', '🦑', '🐠', '🐡', '🦈', '🐳', '👑',
+  '🌊', '🐟', '🦐', '🦪', '🪼', '🧜', '💎', '⭐', '🌟', '✨',
+  '🎆', '🎇', '🌅', '🏆', '🔱', '⚜️', '🦑', '🐠', '🦈', '🚀'
+];
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
