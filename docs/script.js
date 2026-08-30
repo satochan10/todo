@@ -110,12 +110,19 @@ function loadTodos() {
         ...doc.data()
       });
     });
-    // orderフィールドがあればそれでソート、なければcreatedAtでソート
+    // orderフィールドでソート、なければcreatedAtでソート
     todos.sort((a, b) => {
-      if (a.order !== undefined && b.order !== undefined) {
+      const aHasOrder = a.order !== undefined;
+      const bHasOrder = b.order !== undefined;
+
+      if (aHasOrder && bHasOrder) {
         return a.order - b.order;
+      } else if (aHasOrder) {
+        return 1; // aはorderがあるので後ろ
+      } else if (bHasOrder) {
+        return -1; // bはorderがあるので後ろ
       }
-      return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
+      return (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0);
     });
     isLoading = false;
     renderTodos();
@@ -140,9 +147,11 @@ async function addTodo() {
   }
 
   try {
+    const maxOrder = todos.reduce((max, t) => Math.max(max, t.order ?? 0), 0);
     await db.collection('todos').add({
       text: text,
       completed: false,
+      order: maxOrder + 1,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     todoInput.value = '';
