@@ -6,7 +6,7 @@
 
 body {
   font-family: "Comic Sans MS", "Trebuchet MS", cursive;
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 50%, #4fc3f7 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -51,7 +51,7 @@ header {
 
 header h1 {
   font-size: 3em;
-  color: #ff6b9d;
+  color: #0097a7;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   margin: 0;
 }
@@ -73,7 +73,7 @@ header h1 {
 
 header .subtitle {
   font-size: 1.2em;
-  color: #c44569;
+  color: #006064;
   font-weight: bold;
 }
 
@@ -85,20 +85,20 @@ header .subtitle {
 
 .points-badge {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc700 100%);
-  border: 4px solid #ff6b6b;
+  border: 4px solid #0097a7;
   border-radius: 30px;
   padding: 20px 40px;
   display: inline-block;
   font-size: 2.2em;
   font-weight: bold;
-  color: #d63031;
+  color: #006064;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 151, 167, 0.3);
   animation: pulse 1s ease-in-out infinite;
 }
 
 #pointsCount {
-  color: #ff6b6b;
+  color: #006064;
   font-size: 1.3em;
   font-weight: bold;
   display: inline-block;
@@ -134,7 +134,7 @@ main {
   background: white;
   border-radius: 30px;
   padding: 30px;
-  box-shadow: 0 10px 40px rgba(255, 107, 157, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 150, 199, 0.15);
 }
 
 .input-section {
@@ -150,22 +150,22 @@ main {
   flex: 1;
   padding: 15px 20px;
   font-size: 1.1em;
-  border: 3px solid #ffc0e0;
+  border: 3px solid #b3e5fc;
   border-radius: 20px;
-  background: #fff5f9;
+  background: #e0f7fa;
   font-family: "Comic Sans MS", cursive;
   transition: all 0.3s ease;
 }
 
 #todoInput:focus {
   outline: none;
-  border-color: #ff6b9d;
-  box-shadow: 0 0 10px rgba(255, 107, 157, 0.3);
-  background: #fffbfd;
+  border-color: #0097a7;
+  box-shadow: 0 0 10px rgba(0, 151, 167, 0.3);
+  background: #b3e5fc;
 }
 
 #todoInput::placeholder {
-  color: #ffb3d9;
+  color: #80deea;
 }
 
 .add-btn {
@@ -201,19 +201,19 @@ main {
 .filter-btn {
   padding: 10px 20px;
   font-size: 1em;
-  background: #e8f4f8;
-  border: 2px solid #b3e5fc;
+  background: #e0f7fa;
+  border: 2px solid #80deea;
   border-radius: 20px;
   cursor: pointer;
   font-family: "Comic Sans MS", cursive;
   font-weight: bold;
-  color: #0277bd;
+  color: #0097a7;
   transition: all 0.3s ease;
 }
 
 .filter-btn.active {
-  background: #81d4fa;
-  border-color: #0277bd;
+  background: #4fc3f7;
+  border-color: #0097a7;
   color: white;
 }
 
@@ -231,7 +231,7 @@ main {
   align-items: center;
   gap: 15px;
   padding: 15px;
-  background: linear-gradient(135deg, #e8f4f8 0%, #f0e6ff 100%);
+  background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
   border-radius: 20px;
   margin-bottom: 10px;
   animation: slideIn 0.3s ease;
@@ -267,7 +267,7 @@ main {
   width: 30px;
   height: 30px;
   cursor: pointer;
-  accent-color: #ff6b9d;
+  accent-color: #0097a7;
   transform: scale(1.5);
 }
 
@@ -362,7 +362,7 @@ main {
 }
 
 .modal-content h2 {
-  color: #ff6b9d;
+  color: #0097a7;
   font-size: 1.8em;
   margin-bottom: 15px;
 }
@@ -377,7 +377,7 @@ main {
   width: 100%;
   padding: 15px;
   font-size: 1.1em;
-  border: 2px solid #ffc0e0;
+  border: 2px solid #80deea;
   border-radius: 15px;
   font-family: "Comic Sans MS", cursive;
   margin-bottom: 20px;
@@ -385,8 +385,8 @@ main {
 
 #passwordInput:focus {
   outline: none;
-  border-color: #ff6b9d;
-  box-shadow: 0 0 10px rgba(255, 107, 157, 0.3);
+  border-color: #0097a7;
+  box-shadow: 0 0 10px rgba(0, 151, 167, 0.3);
 }
 
 .modal-buttons {
@@ -438,13 +438,13 @@ main {
 
 .empty-state p {
   font-size: 2em;
-  color: #ff6b9d;
+  color: #0097a7;
   margin-bottom: 20px;
 }
 
 .footer {
   text-align: center;
-  border-top: 3px dashed #ffc0e0;
+  border-top: 3px dashed #80deea;
   padding-top: 20px;
 }
 
@@ -469,13 +469,13 @@ main {
 
 .count {
   font-size: 1.1em;
-  color: #ff6b9d;
+  color: #0097a7;
   font-weight: bold;
 }
 
 #count {
   font-size: 1.2em;
-  color: #c44569;
+  color: #006064;
 }
 
 @media (max-width: 480px) {
