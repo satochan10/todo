@@ -58,9 +58,15 @@ function loadPoints() {
 }
 
 async function addPoints(amount = 1) {
-  points += amount;
+  const multiplier = isMorningBonus() ? 2 : 1;
+  points += amount * multiplier;
   updatePointsDisplay();
   await savePoints();
+}
+
+function isMorningBonus() {
+  const hour = new Date().getHours();
+  return hour >= 6 && hour < 9;
 }
 
 function updatePointsDisplay() {
@@ -381,8 +387,22 @@ reloadBtn.addEventListener('click', () => {
 window.deleteTodo = deleteTodo;
 window.toggleTodo = toggleTodo;
 
+function updateMorningBonusDisplay() {
+  const morningBonusEl = document.getElementById('morningBonus');
+  if (morningBonusEl) {
+    if (isMorningBonus()) {
+      morningBonusEl.style.display = 'block';
+    } else {
+      morningBonusEl.style.display = 'none';
+    }
+  }
+}
+
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
   loadPoints();
   loadTodos();
+  updateMorningBonusDisplay();
+  // 毎分チェックして、朝のボーナス表示を更新
+  setInterval(updateMorningBonusDisplay, 60000);
 });
