@@ -43,6 +43,11 @@ const pointsBadge = document.getElementById('pointsBadge');
 const rewardsModal = document.getElementById('rewardsModal');
 const rewardsCloseBtn = document.getElementById('rewardsCloseBtn');
 const currentPointsDisplay = document.getElementById('currentPoints');
+const youtubeReward = document.getElementById('youtubeReward');
+const confirmRewardModal = document.getElementById('confirmRewardModal');
+const confirmRewardOkBtn = document.getElementById('confirmRewardOkBtn');
+const confirmRewardCancelBtn = document.getElementById('confirmRewardCancelBtn');
+const confirmRewardText = document.getElementById('confirmRewardText');
 
 // ポイント管理
 function loadPoints() {
@@ -365,6 +370,31 @@ function hideRewardsModal() {
   rewardsModal.classList.remove('show');
 }
 
+// 特典確認モーダル
+function showConfirmRewardModal(rewardName, rewardCost) {
+  if (points < rewardCost) {
+    alert('ポイントが足りません！\n必要: ' + rewardCost + 'P, 現在: ' + points + 'P');
+    return;
+  }
+  confirmRewardText.textContent = rewardName + 'に' + rewardCost + 'Pを使いますか？';
+  confirmRewardModal.classList.add('show');
+  confirmRewardModal.dataset.cost = rewardCost;
+}
+
+function hideConfirmRewardModal() {
+  confirmRewardModal.classList.remove('show');
+}
+
+async function confirmUseReward() {
+  const cost = parseInt(confirmRewardModal.dataset.cost);
+  points -= cost;
+  await savePoints();
+  updatePointsDisplay();
+  hideConfirmRewardModal();
+  hideRewardsModal();
+  alert('特典を獲得しました！');
+}
+
 // イベントリスナー
 addBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', e => {
@@ -398,6 +428,18 @@ rewardsCloseBtn.addEventListener('click', hideRewardsModal);
 rewardsModal.addEventListener('click', e => {
   if (e.target === rewardsModal) {
     hideRewardsModal();
+  }
+});
+
+youtubeReward.addEventListener('click', () => {
+  showConfirmRewardModal('YouTube 30分', 10);
+});
+
+confirmRewardOkBtn.addEventListener('click', confirmUseReward);
+confirmRewardCancelBtn.addEventListener('click', hideConfirmRewardModal);
+confirmRewardModal.addEventListener('click', e => {
+  if (e.target === confirmRewardModal) {
+    hideConfirmRewardModal();
   }
 });
 

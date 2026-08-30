@@ -533,11 +533,58 @@ main {
   border-radius: 20px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  text-align: left;
+  width: 100%;
+  font-size: 1em;
+  color: inherit;
 }
 
 .reward-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 151, 167, 0.2);
+}
+
+.confirm-content {
+  max-width: 400px;
+  text-align: center;
+}
+
+.confirm-content p {
+  font-size: 1.1em;
+  margin-bottom: 25px;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.confirm-ok {
+  background: linear-gradient(135deg, #4fc3f7 0%, #81d4fa 100%);
+  color: white;
+}
+
+.confirm-ok:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.3);
+}
+
+.confirm-cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-cancel:hover {
+  background: #c0c0c0;
 }
 
 .reward-icon {
