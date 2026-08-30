@@ -97,6 +97,15 @@ header .subtitle {
   animation: pulse 1s ease-in-out infinite;
 }
 
+.points-badge.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.points-badge.clickable:hover {
+  transform: scale(1.05);
+}
+
 #pointsCount {
   color: #006064;
   font-size: 1.3em;
@@ -487,6 +496,92 @@ main {
   color: #006064;
 }
 
+.rewards-content {
+  max-width: 500px;
+}
+
+.rewards-content h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+#currentPoints {
+  font-size: 1.2em;
+  color: #006064;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #e0f7fa;
+  border-radius: 15px;
+}
+
+#currentPoints strong {
+  font-size: 1.5em;
+  color: #0097a7;
+}
+
+.rewards-list {
+  margin-bottom: 25px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
+  border: 3px solid #80deea;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.reward-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 151, 167, 0.2);
+}
+
+.reward-icon {
+  font-size: 3em;
+  min-width: 70px;
+  text-align: center;
+}
+
+.reward-details {
+  flex: 1;
+}
+
+.reward-name {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #006064;
+  margin-bottom: 8px;
+}
+
+.reward-cost {
+  font-size: 1.1em;
+  color: #0097a7;
+  font-weight: bold;
+}
+
+.rewards-close-btn {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 1.1em;
+  background: linear-gradient(135deg, #4fc3f7 0%, #81d4fa 100%);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.rewards-close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.3);
+}
+
 @media (max-width: 480px) {
   header h1 {
     font-size: 2.2em;
@@ -506,5 +601,24 @@ main {
 
   .filters {
     flex-wrap: wrap;
+  }
+
+  .rewards-content {
+    max-width: 90vw;
+  }
+
+  .reward-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .reward-icon {
+    font-size: 2.5em;
+    min-width: auto;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
   }
 }

@@ -15,7 +15,7 @@
         <button id="settingsBtn" class="settings-btn">⚙️</button>
       </div>
       <div class="points-display">
-        <div class="points-badge">
+        <div id="pointsBadge" class="points-badge clickable">
           ⭐ <span id="pointsCount">0</span> ポイント ⭐ <span id="characterSpan">🐚</span>
         </div>
         <div id="morningBonus" class="morning-bonus" style="display: none;">
@@ -34,6 +34,24 @@
           <button id="passwordOkBtn">OK</button>
           <button id="passwordCancelBtn">キャンセル</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 特典モーダル -->
+    <div id="rewardsModal" class="modal">
+      <div class="modal-content rewards-content">
+        <h2>🎁 ポイント特典</h2>
+        <p id="currentPoints">現在のポイント: <strong>0</strong>P</p>
+        <div class="rewards-list">
+          <div class="reward-item">
+            <div class="reward-icon">📺</div>
+            <div class="reward-details">
+              <div class="reward-name">YouTube 30分</div>
+              <div class="reward-cost">10P</div>
+            </div>
+          </div>
+        </div>
+        <button id="rewardsCloseBtn" class="rewards-close-btn">閉じる</button>
       </div>
     </div>
 

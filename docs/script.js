@@ -39,6 +39,10 @@ const passwordOkBtn = document.getElementById('passwordOkBtn');
 const passwordCancelBtn = document.getElementById('passwordCancelBtn');
 const pointsCount = document.getElementById('pointsCount');
 const reloadBtn = document.getElementById('reloadBtn');
+const pointsBadge = document.getElementById('pointsBadge');
+const rewardsModal = document.getElementById('rewardsModal');
+const rewardsCloseBtn = document.getElementById('rewardsCloseBtn');
+const currentPointsDisplay = document.getElementById('currentPoints');
 
 // ポイント管理
 function loadPoints() {
@@ -351,6 +355,16 @@ function checkPassword() {
   }
 }
 
+// 特典モーダル
+function showRewardsModal() {
+  currentPointsDisplay.innerHTML = '現在のポイント: <strong>' + points + '</strong>P';
+  rewardsModal.classList.add('show');
+}
+
+function hideRewardsModal() {
+  rewardsModal.classList.remove('show');
+}
+
 // イベントリスナー
 addBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', e => {
@@ -376,6 +390,14 @@ passwordCancelBtn.addEventListener('click', hidePasswordModal);
 passwordInput.addEventListener('keypress', e => {
   if (e.key === 'Enter') {
     checkPassword();
+  }
+});
+
+pointsBadge.addEventListener('click', showRewardsModal);
+rewardsCloseBtn.addEventListener('click', hideRewardsModal);
+rewardsModal.addEventListener('click', e => {
+  if (e.target === rewardsModal) {
+    hideRewardsModal();
   }
 });
 
