@@ -17,6 +17,7 @@ let isLoading = false;
 let isAdminMode = false;
 let points = 0;
 let draggedTodo = null;
+let belongings = [];
 
 // キャラクター進化ステージ（海の生き物）
 const characters = [
@@ -48,6 +49,14 @@ const confirmRewardModal = document.getElementById('confirmRewardModal');
 const confirmRewardOkBtn = document.getElementById('confirmRewardOkBtn');
 const confirmRewardCancelBtn = document.getElementById('confirmRewardCancelBtn');
 const confirmRewardText = document.getElementById('confirmRewardText');
+const belongingsBtn = document.getElementById('belongingsBtn');
+const belongingsModal = document.getElementById('belongingsModal');
+const belongingsList = document.getElementById('belongingsList');
+const belongingsInput = document.getElementById('belongingsInput');
+const addBelongingBtn = document.getElementById('addBelongingBtn');
+const belongingsInputSection = document.getElementById('belongingsInputSection');
+const clearAllBelongingsBtn = document.getElementById('clearAllBelongingsBtn');
+const belongingsCloseBtn = document.getElementById('belongingsCloseBtn');
 
 // ポイント管理
 function loadPoints() {
@@ -388,6 +397,156 @@ async function saveTodosOrder() {
   });
 }
 
+// 持ち物チェック関連関数
+function loadBelongings() {
+  db.collection('belongings').onSnapshot(snapshot => {
+    belongings = [];
+    snapshot.forEach(doc => {
+      belongings.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    belongings.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    renderBelongings();
+  });
+}
+
+async function addBelonging() {
+  const text = belongingsInput.value.trim();
+  if (text === '') {
+    alert('もちものを入力してね！');
+    return;
+  }
+
+  try {
+    const maxOrder = belongings.reduce((max, b) => Math.max(max, b.order ?? 0), 0);
+    await db.collection('belongings').add({
+      text: text,
+      checked: false,
+      order: maxOrder + 1,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    belongingsInput.value = '';
+    belongingsInput.focus();
+  } catch (error) {
+    console.error('エラー:', error);
+    alert('エラーが発生しました');
+  }
+}
+
+async function toggleBelonging(id) {
+  const belonging = belongings.find(b => b.id === id);
+  if (belonging) {
+    try {
+      await db.collection('belongings').doc(id).update({
+        checked: !belonging.checked
+      });
+    } catch (error) {
+      console.error('更新エラー:', error);
+    }
+  }
+}
+
+async function deleteBelonging(id) {
+  try {
+    await db.collection('belongings').doc(id).delete();
+  } catch (error) {
+    console.error('削除エラー:', error);
+    alert('削除に失敗しました: ' + error.message);
+  }
+}
+
+async function clearAllBelongings() {
+  const checkedBelongings = belongings.filter(b => b.checked);
+  if (checkedBelongings.length === 0) {
+    alert('チェック済みのもちものはないよ！');
+    return;
+  }
+
+  try {
+    const batch = db.batch();
+    checkedBelongings.forEach(belonging => {
+      const docRef = db.collection('belongings').doc(belonging.id);
+      batch.update(docRef, { checked: false });
+    });
+    await batch.commit();
+  } catch (error) {
+    console.error('更新エラー:', error);
+  }
+}
+
+function renderBelongings() {
+  belongingsList.innerHTML = '';
+
+  if (belongings.length === 0) {
+    const emptyMsg = document.createElement('p');
+    emptyMsg.style.textAlign = 'center';
+    emptyMsg.style.color = '#999';
+    emptyMsg.textContent = 'もちものを追加してね！';
+    belongingsList.appendChild(emptyMsg);
+    return;
+  }
+
+  belongings.forEach(belonging => {
+    const div = document.createElement('div');
+    div.className = `belonging-item ${belonging.checked ? 'checked' : ''}`;
+    div.dataset.belongingId = belonging.id;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'belonging-checkbox';
+    checkbox.checked = belonging.checked;
+    checkbox.addEventListener('change', e => {
+      e.stopPropagation();
+      toggleBelonging(belonging.id);
+    });
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'belonging-text';
+    textSpan.textContent = belonging.text;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'belonging-delete';
+    deleteBtn.textContent = '🗑️ 削除';
+    deleteBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      deleteBelonging(belonging.id);
+    });
+
+    if (!isAdminMode) {
+      deleteBtn.style.display = 'none';
+      belongingsInputSection.style.display = 'none';
+    } else {
+      deleteBtn.style.display = 'block';
+      belongingsInputSection.style.display = 'flex';
+    }
+
+    // 行クリックでチェック状態をトグル
+    div.addEventListener('click', () => toggleBelonging(belonging.id));
+
+    div.appendChild(checkbox);
+    div.appendChild(textSpan);
+    div.appendChild(deleteBtn);
+    belongingsList.appendChild(div);
+  });
+}
+
+function showBelongingsModal() {
+  belongingsModal.classList.add('show');
+  if (isAdminMode) {
+    belongingsModal.classList.add('admin-mode');
+  } else {
+    belongingsModal.classList.remove('admin-mode');
+  }
+  renderBelongings();
+}
+
+function hideBelongingsModal() {
+  belongingsModal.classList.remove('show');
+}
+
+
 // XSS対策
 function escapeHtml(text) {
   const map = {
@@ -416,8 +575,9 @@ function checkPassword() {
   if (password === '2019') {
     isAdminMode = true;
     hidePasswordModal();
+    document.body.classList.add('admin-mode');
     renderTodos();
-    alert('管理者モードに切り替わりました');
+    renderBelongings();
   } else {
     alert('パスワードが間違っています');
     passwordInput.value = '';
@@ -512,6 +672,21 @@ reloadBtn.addEventListener('click', () => {
   location.reload();
 });
 
+belongingsBtn.addEventListener('click', showBelongingsModal);
+belongingsCloseBtn.addEventListener('click', hideBelongingsModal);
+belongingsModal.addEventListener('click', e => {
+  if (e.target === belongingsModal) {
+    hideBelongingsModal();
+  }
+});
+clearAllBelongingsBtn.addEventListener('click', clearAllBelongings);
+addBelongingBtn.addEventListener('click', addBelonging);
+belongingsInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    addBelonging();
+  }
+});
+
 // グローバルスコープに関数を登録（HTMLから呼び出せるように）
 window.deleteTodo = deleteTodo;
 window.toggleTodo = toggleTodo;
@@ -531,6 +706,7 @@ function updateMorningBonusDisplay() {
 document.addEventListener('DOMContentLoaded', () => {
   loadPoints();
   loadTodos();
+  loadBelongings();
   updateMorningBonusDisplay();
   // 毎分チェックして、朝のボーナス表示を更新
   setInterval(updateMorningBonusDisplay, 60000);
