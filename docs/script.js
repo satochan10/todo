@@ -562,6 +562,7 @@ function renderBelongings() {
 
 function showBelongingsModal() {
   belongingsModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
   if (isAdminMode) {
     belongingsModal.classList.add('admin-mode');
   } else {
@@ -572,6 +573,7 @@ function showBelongingsModal() {
 
 function hideBelongingsModal() {
   belongingsModal.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 
