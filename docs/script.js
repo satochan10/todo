@@ -45,6 +45,7 @@ const rewardsModal = document.getElementById('rewardsModal');
 const rewardsCloseBtn = document.getElementById('rewardsCloseBtn');
 const currentPointsDisplay = document.getElementById('currentPoints');
 const youtubeReward = document.getElementById('youtubeReward');
+const moneyReward = document.getElementById('moneyReward');
 const confirmRewardModal = document.getElementById('confirmRewardModal');
 const confirmRewardOkBtn = document.getElementById('confirmRewardOkBtn');
 const confirmRewardCancelBtn = document.getElementById('confirmRewardCancelBtn');
@@ -688,6 +689,10 @@ rewardsModal.addEventListener('click', e => {
 
 youtubeReward.addEventListener('click', () => {
   showConfirmRewardModal('YouTube 30分', 10);
+});
+
+moneyReward.addEventListener('click', () => {
+  showConfirmRewardModal('100円', 30);
 });
 
 confirmRewardOkBtn.addEventListener('click', confirmUseReward);
