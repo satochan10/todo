@@ -620,10 +620,12 @@ function checkPassword() {
 function showRewardsModal() {
   currentPointsDisplay.innerHTML = '現在のポイント: <strong>' + points + '</strong>P';
   rewardsModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
 function hideRewardsModal() {
   rewardsModal.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 // 特典確認モーダル
@@ -635,10 +637,12 @@ function showConfirmRewardModal(rewardName, rewardCost) {
   confirmRewardText.textContent = rewardName + 'に' + rewardCost + 'Pを使いますか？';
   confirmRewardModal.classList.add('show');
   confirmRewardModal.dataset.cost = rewardCost;
+  document.body.style.overflow = 'hidden';
 }
 
 function hideConfirmRewardModal() {
   confirmRewardModal.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 async function confirmUseReward() {
