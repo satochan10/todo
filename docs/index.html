@@ -21,7 +21,7 @@
         <div id="morningBonus" class="morning-bonus" style="display: none;">
           🌅 朝の時間帯！ポイント2倍中！ 🌅
         </div>
-        <button id="belongingsBtn" class="belongings-btn">📋 もちものチェック</button>
+        <button id="belongingsBtn" class="belongings-btn">📋 おでかけまえチェック</button>
       </div>
     </header>
 
@@ -71,10 +71,12 @@
     <!-- もちものチェックモーダル -->
     <div id="belongingsModal" class="modal">
       <div class="modal-content belongings-content">
-        <h2>📋 もちものチェック</h2>
+        <h2>📋 おでかけまえチェック</h2>
+        <div id="belongingsCheckMessage" class="belongings-message" style="display: none;"></div>
         <div id="belongingsList" class="belongings-list">
           <!-- 動的に追加されます -->
         </div>
+        <div id="belongingsCount" class="belongings-count" style="display: none;"></div>
         <div id="belongingsInputSection" style="display: none;" class="belongings-input-section">
           <input type="text" id="belongingsInput" placeholder="もちものを入力..." autocomplete="off">
           <button id="addBelongingBtn">➕ 追加</button>

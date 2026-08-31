@@ -57,6 +57,8 @@ const addBelongingBtn = document.getElementById('addBelongingBtn');
 const belongingsInputSection = document.getElementById('belongingsInputSection');
 const clearAllBelongingsBtn = document.getElementById('clearAllBelongingsBtn');
 const belongingsCloseBtn = document.getElementById('belongingsCloseBtn');
+const belongingsCheckMessage = document.getElementById('belongingsCheckMessage');
+const belongingsCount = document.getElementById('belongingsCount');
 
 // ポイント管理
 function loadPoints() {
@@ -485,8 +487,14 @@ function renderBelongings() {
     emptyMsg.style.color = '#999';
     emptyMsg.textContent = 'もちものを追加してね！';
     belongingsList.appendChild(emptyMsg);
+    belongingsCount.style.display = 'none';
+    belongingsCheckMessage.style.display = 'none';
     return;
   }
+
+  const checkedCount = belongings.filter(b => b.checked).length;
+  const totalCount = belongings.length;
+  const uncheckedCount = totalCount - checkedCount;
 
   belongings.forEach(belonging => {
     const div = document.createElement('div');
@@ -530,6 +538,26 @@ function renderBelongings() {
     div.appendChild(deleteBtn);
     belongingsList.appendChild(div);
   });
+
+  // カウント表示
+  belongingsCount.style.display = 'block';
+  belongingsCount.innerHTML = `<span class="count-text">チェック: ${checkedCount}/${totalCount} (残り: ${uncheckedCount}個)</span>`;
+
+  // 全部チェック時のメッセージ
+  if (uncheckedCount === 0 && totalCount > 0) {
+    belongingsCheckMessage.style.display = 'block';
+    const messages = [
+      '🎉 やった！すべてチェック完了！楽しいおでかけだね！',
+      '✨ 完璧だ！これで安心だね～♪',
+      '🌟 すごい！全部バッチリだ！行ってきます！',
+      '🚀 完璧！もう完全に準備できたね！',
+      '💫 わあ！全部そろった！さあ出発だ！'
+    ];
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    belongingsCheckMessage.textContent = randomMessage;
+  } else {
+    belongingsCheckMessage.style.display = 'none';
+  }
 }
 
 function showBelongingsModal() {
