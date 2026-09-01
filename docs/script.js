@@ -87,7 +87,7 @@ async function addPoints(amount = 1) {
 
 function isMorningBonus() {
   const hour = new Date().getHours();
-  return hour >= 6 && hour < 9;
+  return hour >= 18 && hour < 21;
 }
 
 function updatePointsDisplay() {
@@ -747,6 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTodos();
   loadBelongings();
   updateMorningBonusDisplay();
-  // 毎分チェックして、朝のボーナス表示を更新
+  // 毎分チェックして、ボーナス表示を更新
   setInterval(updateMorningBonusDisplay, 60000);
 });
