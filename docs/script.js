@@ -18,6 +18,8 @@ let isAdminMode = false;
 let points = 0;
 let draggedTodo = null;
 let belongings = [];
+let morningTasks = [];
+let nightTasks = [];
 
 // キャラクター進化ステージ（海の生き物）
 const characters = [
@@ -60,6 +62,129 @@ const clearAllBelongingsBtn = document.getElementById('clearAllBelongingsBtn');
 const belongingsCloseBtn = document.getElementById('belongingsCloseBtn');
 const belongingsCheckMessage = document.getElementById('belongingsCheckMessage');
 const belongingsCount = document.getElementById('belongingsCount');
+const quickTaskButtons = document.getElementById('quickTaskButtons');
+const morningTaskBtn = document.getElementById('morningTaskBtn');
+const nightTaskBtn = document.getElementById('nightTaskBtn');
+const editTasksBtn = document.getElementById('editTasksBtn');
+const editTasksModal = document.getElementById('editTasksModal');
+const editTasksCloseBtn = document.getElementById('editTasksCloseBtn');
+const morningTasksList = document.getElementById('morningTasksList');
+const nightTasksList = document.getElementById('nightTasksList');
+const morningTaskInput = document.getElementById('morningTaskInput');
+const nightTaskInput = document.getElementById('nightTaskInput');
+const addMorningTaskBtn = document.getElementById('addMorningTaskBtn');
+const addNightTaskBtn = document.getElementById('addNightTaskBtn');
+
+// 朝・夜のタスク管理
+function loadQuickTasks() {
+  db.collection('app').doc('settings').onSnapshot(doc => {
+    if (doc.exists) {
+      morningTasks = doc.data().morningTasks || [];
+      nightTasks = doc.data().nightTasks || [];
+    } else {
+      morningTasks = [];
+      nightTasks = [];
+    }
+    renderQuickTasksList();
+  }, error => {
+    console.error('クイックタスク読み込みエラー:', error);
+  });
+}
+
+async function saveQuickTasks() {
+  try {
+    await db.collection('app').doc('settings').set({
+      morningTasks: morningTasks,
+      nightTasks: nightTasks
+    }, { merge: true });
+    console.log('クイックタスク保存成功');
+  } catch (error) {
+    console.error('クイックタスク保存エラー:', error);
+  }
+}
+
+async function addQuickTask(taskType, taskText) {
+  if (taskText.trim() === '') return;
+
+  if (taskType === 'morning') {
+    morningTasks.push(taskText);
+  } else {
+    nightTasks.push(taskText);
+  }
+
+  await saveQuickTasks();
+  renderQuickTasksList();
+}
+
+async function removeQuickTask(taskType, index) {
+  if (taskType === 'morning') {
+    morningTasks.splice(index, 1);
+  } else {
+    nightTasks.splice(index, 1);
+  }
+
+  await saveQuickTasks();
+  renderQuickTasksList();
+}
+
+function renderQuickTasksList() {
+  morningTasksList.innerHTML = '';
+  nightTasksList.innerHTML = '';
+
+  morningTasks.forEach((task, index) => {
+    const div = document.createElement('div');
+    div.className = 'quick-task-item';
+    div.innerHTML = `
+      <span>${task}</span>
+      <button class="quick-task-delete" data-type="morning" data-index="${index}">🗑️</button>
+    `;
+    morningTasksList.appendChild(div);
+  });
+
+  nightTasks.forEach((task, index) => {
+    const div = document.createElement('div');
+    div.className = 'quick-task-item';
+    div.innerHTML = `
+      <span>${task}</span>
+      <button class="quick-task-delete" data-type="night" data-index="${index}">🗑️</button>
+    `;
+    nightTasksList.appendChild(div);
+  });
+
+  document.querySelectorAll('.quick-task-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const taskType = e.target.dataset.type;
+      const index = parseInt(e.target.dataset.index);
+      removeQuickTask(taskType, index);
+    });
+  });
+}
+
+async function addQuickTasksToTodo(taskType) {
+  const tasks = taskType === 'morning' ? morningTasks : nightTasks;
+
+  if (tasks.length === 0) {
+    alert(`${taskType === 'morning' ? '朝' : '夜'}のタスクが設定されていません！`);
+    return;
+  }
+
+  try {
+    const maxOrder = todos.reduce((max, t) => Math.max(max, t.order ?? 0), 0);
+
+    for (let i = 0; i < tasks.length; i++) {
+      await db.collection('todos').add({
+        text: tasks[i],
+        completed: false,
+        order: maxOrder + i + 1,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    alert(`${taskType === 'morning' ? '朝' : '夜'}のタスク ${tasks.length} 個を追加しました！`);
+  } catch (error) {
+    console.error('タスク追加エラー:', error);
+    alert('タスクの追加に失敗しました');
+  }
+}
 
 // ポイント管理
 function loadPoints() {
@@ -577,6 +702,17 @@ function hideBelongingsModal() {
   document.body.style.overflow = '';
 }
 
+function showEditTasksModal() {
+  editTasksModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  renderQuickTasksList();
+}
+
+function hideEditTasksModal() {
+  editTasksModal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
 
 // XSS対策
 function escapeHtml(text) {
@@ -607,6 +743,7 @@ function checkPassword() {
     isAdminMode = true;
     hidePasswordModal();
     document.body.classList.add('admin-mode');
+    quickTaskButtons.style.display = 'flex';
     renderTodos();
     renderBelongings();
   } else {
@@ -726,6 +863,48 @@ belongingsInput.addEventListener('keypress', e => {
   }
 });
 
+morningTaskBtn.addEventListener('click', () => {
+  addQuickTasksToTodo('morning');
+});
+
+nightTaskBtn.addEventListener('click', () => {
+  addQuickTasksToTodo('night');
+});
+
+editTasksBtn.addEventListener('click', showEditTasksModal);
+editTasksCloseBtn.addEventListener('click', hideEditTasksModal);
+editTasksModal.addEventListener('click', e => {
+  if (e.target === editTasksModal) {
+    hideEditTasksModal();
+  }
+});
+
+addMorningTaskBtn.addEventListener('click', () => {
+  addQuickTask('morning', morningTaskInput.value);
+  morningTaskInput.value = '';
+  morningTaskInput.focus();
+});
+
+addNightTaskBtn.addEventListener('click', () => {
+  addQuickTask('night', nightTaskInput.value);
+  nightTaskInput.value = '';
+  nightTaskInput.focus();
+});
+
+morningTaskInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    addQuickTask('morning', morningTaskInput.value);
+    morningTaskInput.value = '';
+  }
+});
+
+nightTaskInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    addQuickTask('night', nightTaskInput.value);
+    nightTaskInput.value = '';
+  }
+});
+
 // グローバルスコープに関数を登録（HTMLから呼び出せるように）
 window.deleteTodo = deleteTodo;
 window.toggleTodo = toggleTodo;
@@ -746,6 +925,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPoints();
   loadTodos();
   loadBelongings();
+  loadQuickTasks();
   updateMorningBonusDisplay();
   // 毎分チェックして、ボーナス表示を更新
   setInterval(updateMorningBonusDisplay, 60000);

@@ -21,7 +21,14 @@
         <div id="morningBonus" class="morning-bonus" style="display: none;">
           🌙 夕方〜夜の時間帯！ポイント2倍中！ 🌙
         </div>
-        <button id="belongingsBtn" class="belongings-btn">📋 おでかけまえチェック</button>
+        <div class="task-buttons-container">
+          <button id="belongingsBtn" class="belongings-btn">📋 おでかけまえチェック</button>
+          <div id="quickTaskButtons" style="display: none;" class="quick-task-buttons">
+            <button id="morningTaskBtn" class="morning-task-btn">🌅 朝のタスク</button>
+            <button id="nightTaskBtn" class="night-task-btn">🌙 夜のタスク</button>
+            <button id="editTasksBtn" class="edit-tasks-btn">⚙️ タスク編集</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -92,6 +99,28 @@
           <button id="clearAllBelongingsBtn" class="clear-all-btn">クリア</button>
           <button id="belongingsCloseBtn" class="belongings-close-btn">閉じる</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 朝・夜タスク管理モーダル -->
+    <div id="editTasksModal" class="modal">
+      <div class="modal-content quick-tasks-content">
+        <h2>⚙️ 朝・夜のタスク管理</h2>
+        <div class="task-management">
+          <div class="task-section">
+            <h3>🌅 朝のタスク</h3>
+            <div id="morningTasksList" class="quick-tasks-list"></div>
+            <input type="text" id="morningTaskInput" placeholder="朝のタスクを入力..." autocomplete="off">
+            <button id="addMorningTaskBtn" class="add-task-btn">➕ 追加</button>
+          </div>
+          <div class="task-section">
+            <h3>🌙 夜のタスク</h3>
+            <div id="nightTasksList" class="quick-tasks-list"></div>
+            <input type="text" id="nightTaskInput" placeholder="夜のタスクを入力..." autocomplete="off">
+            <button id="addNightTaskBtn" class="add-task-btn">➕ 追加</button>
+          </div>
+        </div>
+        <button id="editTasksCloseBtn" class="edit-tasks-close-btn">閉じる</button>
       </div>
     </div>
 
