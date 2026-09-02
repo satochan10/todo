@@ -31,6 +31,29 @@ python3 -m http.server 8000
 # http://localhost:8000
 ```
 
+**ポート8000が既に使用されている場合:**
+
+```bash
+# ポート8000を使用しているプロセスを確認
+lsof -i :8000
+# 出力例:
+# COMMAND   PID   USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+# Python  69157 satoru    4u  IPv6 0x5fc91db79d0acee1      0t0  TCP *:irdmi (LISTEN)
+
+# 古いプロセスを終了
+kill -9 69157
+
+# 改めてサーバーを起動
+python3 -m http.server 8000
+```
+
+**または別のポートで起動:**
+
+```bash
+python3 -m http.server 3000
+# http://localhost:3000 でアクセス
+```
+
 ### 方法2: Node.jsのhttp-server
 
 ```bash
