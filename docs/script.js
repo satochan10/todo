@@ -1062,6 +1062,8 @@ document.getElementById('bakubakuStopCancelBtn').addEventListener('click', () =>
 function showBakubakuModal() {
   resetBakubaku();
   bakubakuModal.classList.add('show');
+  // 前回スクロールした位置が残らないように いちばん上に もどす
+  bakubakuModal.querySelector('.bakubaku-content').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 }
 
