@@ -213,11 +213,41 @@ function loadPoints() {
 
 // ポイントを もらう（つかえるポイントと せいちょうポイントの りょうほうが ふえる）
 async function earnPoints(amount) {
+  const beforeStage = getStage(totalPoints);
   points += amount;
   totalPoints += amount;
   updatePointsDisplay();
+  const afterStage = getStage(totalPoints);
+  if (afterStage > beforeStage) {
+    // ポイントを もらった よろこびを 見てから しんかを 出す
+    setTimeout(() => showEvolveModal(beforeStage, afterStage), 1200);
+  }
   await savePoints();
 }
+
+// しんかの おいわい
+const evolveModal = document.getElementById('evolveModal');
+
+function showEvolveModal(fromStage, toStage) {
+  const evolveFrom = document.getElementById('evolveFrom');
+  const evolveTo = document.getElementById('evolveTo');
+  evolveFrom.textContent = characters[fromStage];
+  evolveTo.textContent = characters[toStage];
+  document.getElementById('evolveLevel').textContent = 'レベル ' + (toStage + 1) + ' に なったよ！';
+  document.getElementById('evolveNext').textContent = toStage >= characters.length - 1
+    ? '👑 さいごまで しんかした！ すごい！'
+    : 'つぎの しんかまで あと ' + (getStageThreshold(toStage + 1) - totalPoints) + 'P';
+  // アニメーションを 毎回 やりなおす
+  evolveModal.classList.remove('animate');
+  void evolveModal.offsetWidth;
+  evolveModal.classList.add('show', 'animate');
+  // キャラが かわる タイミングで かみふぶき
+  setTimeout(() => launchConfetti(evolveModal, ['✨', '⭐', '🌟', '🎉', '🎊', characters[toStage]]), 1500);
+}
+
+document.getElementById('evolveCloseBtn').addEventListener('click', () => {
+  evolveModal.classList.remove('show', 'animate');
+});
 
 async function addPoints(amount = 1) {
   const multiplier = isMorningBonus() ? 2 : 1;
@@ -1061,7 +1091,10 @@ function formatBakubakuElapsed(sec) {
 
 // かみふぶきを ふらせる
 function launchBakubakuConfetti() {
-  const items = ['🎉', '⭐', '✨', '🎊', '🌟', '💖', '🍚'];
+  launchConfetti(bakubakuModal, ['🎉', '⭐', '✨', '🎊', '🌟', '💖', '🍚']);
+}
+
+function launchConfetti(container, items) {
   for (let i = 0; i < 40; i++) {
     const piece = document.createElement('span');
     piece.className = 'bakubaku-confetti';
@@ -1070,7 +1103,7 @@ function launchBakubakuConfetti() {
     piece.style.fontSize = (1.2 + Math.random() * 1.6) + 'em';
     piece.style.animationDuration = (2 + Math.random() * 2) + 's';
     piece.style.animationDelay = Math.random() * 0.8 + 's';
-    bakubakuModal.appendChild(piece);
+    container.appendChild(piece);
     piece.addEventListener('animationend', () => piece.remove());
   }
 }
