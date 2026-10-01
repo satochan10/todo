@@ -833,7 +833,7 @@ youtubeReward.addEventListener('click', () => {
 });
 
 moneyReward.addEventListener('click', () => {
-  showConfirmRewardModal('100円', 30);
+  showConfirmRewardModal('100円', 20);
 });
 
 confirmRewardOkBtn.addEventListener('click', confirmUseReward);
@@ -843,6 +843,255 @@ confirmRewardModal.addEventListener('click', e => {
     hideConfirmRewardModal();
   }
 });
+
+// バクバクチャレンジ
+const BAKUBAKU_LIMIT_SEC = 20 * 60;
+const bakubakuModal = document.getElementById('bakubakuModal');
+const bakubakuTimer = document.getElementById('bakubakuTimer');
+const bakubakuResult = document.getElementById('bakubakuResult');
+const bakubakuStartBtn = document.getElementById('bakubakuStartBtn');
+const bakubakuStopBtn = document.getElementById('bakubakuStopBtn');
+const bakubakuPauseBtn = document.getElementById('bakubakuPauseBtn');
+const bakubakuCloseBtn = document.getElementById('bakubakuCloseBtn');
+const bakubakuQuitBtn = document.getElementById('bakubakuQuitBtn');
+let bakubakuStartTime = null;
+// いちじていし するまでに すすんだ じかん（ミリ秒）
+let bakubakuElapsedBeforeMs = 0;
+let bakubakuPaused = false;
+let bakubakuInterval = null;
+
+function getBakubakuElapsedSec() {
+  const runningMs = bakubakuStartTime ? Date.now() - bakubakuStartTime : 0;
+  return Math.floor((bakubakuElapsedBeforeMs + runningMs) / 1000);
+}
+
+function formatBakubakuTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function getBakubakuPoints(elapsedSec) {
+  if (elapsedSec <= 10 * 60) return 20;
+  if (elapsedSec <= 12 * 60) return 16;
+  if (elapsedSec <= 14 * 60) return 12;
+  if (elapsedSec <= 16 * 60) return 8;
+  if (elapsedSec <= 18 * 60) return 4;
+  if (elapsedSec < 20 * 60) return 2;
+  return 0;
+}
+
+// いまもらえるポイントの行をめだたせる
+function highlightBakubakuRule(elapsedSec) {
+  const rows = document.querySelectorAll('#bakubakuRules li');
+  let found = false;
+  rows.forEach(row => {
+    const isCurrent = elapsedSec !== null && !found && elapsedSec <= Number(row.dataset.max);
+    if (isCurrent) found = true;
+    row.classList.toggle('current', isCurrent);
+    row.classList.toggle('passed', elapsedSec !== null && elapsedSec > Number(row.dataset.max));
+  });
+}
+
+function resetBakubaku() {
+  clearInterval(bakubakuInterval);
+  bakubakuInterval = null;
+  bakubakuStartTime = null;
+  bakubakuElapsedBeforeMs = 0;
+  bakubakuPaused = false;
+  bakubakuTimer.textContent = formatBakubakuTime(BAKUBAKU_LIMIT_SEC);
+  bakubakuTimer.classList.remove('running', 'paused', 'finished');
+  bakubakuResult.style.display = 'none';
+  bakubakuStartBtn.disabled = false;
+  bakubakuStartBtn.textContent = '▶️ スタート';
+  bakubakuStopBtn.disabled = true;
+  bakubakuPauseBtn.disabled = true;
+  bakubakuCloseBtn.disabled = false;
+  bakubakuQuitBtn.disabled = true;
+  highlightBakubakuRule(null);
+}
+
+function tickBakubaku() {
+  const elapsedSec = getBakubakuElapsedSec();
+  const remaining = Math.max(BAKUBAKU_LIMIT_SEC - elapsedSec, 0);
+  bakubakuTimer.textContent = formatBakubakuTime(remaining);
+  highlightBakubakuRule(elapsedSec);
+  if (remaining === 0) {
+    finishBakubaku(BAKUBAKU_LIMIT_SEC);
+  }
+}
+
+function startBakubaku() {
+  if (bakubakuPaused) {
+    resumeBakubaku();
+    return;
+  }
+  resetBakubaku();
+  bakubakuStartTime = Date.now();
+  bakubakuTimer.classList.add('running');
+  bakubakuStartBtn.disabled = true;
+  bakubakuPauseBtn.disabled = false;
+  bakubakuStopBtn.disabled = false;
+  // ストップするまでは とじられない
+  bakubakuCloseBtn.disabled = true;
+  // とちゅうでおわる は チャレンジちゅうだけ つかえる
+  bakubakuQuitBtn.disabled = false;
+  bakubakuInterval = setInterval(tickBakubaku, 250);
+}
+
+function pauseBakubaku() {
+  if (!bakubakuStartTime) return;
+  bakubakuElapsedBeforeMs += Date.now() - bakubakuStartTime;
+  bakubakuStartTime = null;
+  bakubakuPaused = true;
+  clearInterval(bakubakuInterval);
+  bakubakuInterval = null;
+  bakubakuTimer.classList.remove('running');
+  bakubakuTimer.classList.add('paused');
+  bakubakuStartBtn.disabled = false;
+  bakubakuStartBtn.textContent = '▶️ さいかい';
+  bakubakuPauseBtn.disabled = true;
+  // いちじていし ちゅうは ストップ（ポイントもらう）できない
+  bakubakuStopBtn.disabled = true;
+}
+
+function resumeBakubaku() {
+  bakubakuPaused = false;
+  bakubakuStartTime = Date.now();
+  bakubakuTimer.classList.remove('paused');
+  bakubakuTimer.classList.add('running');
+  bakubakuStartBtn.disabled = true;
+  bakubakuStartBtn.textContent = '▶️ スタート';
+  bakubakuPauseBtn.disabled = false;
+  bakubakuStopBtn.disabled = false;
+  bakubakuInterval = setInterval(tickBakubaku, 250);
+}
+
+async function finishBakubaku(elapsedSec) {
+  clearInterval(bakubakuInterval);
+  bakubakuInterval = null;
+  bakubakuStartTime = null;
+  bakubakuElapsedBeforeMs = 0;
+  bakubakuPaused = false;
+  bakubakuTimer.classList.remove('running', 'paused');
+  bakubakuTimer.classList.add('finished');
+  bakubakuStartBtn.disabled = false;
+  bakubakuStartBtn.textContent = '🔁 もういちど';
+  bakubakuStopBtn.disabled = true;
+  bakubakuPauseBtn.disabled = true;
+  bakubakuCloseBtn.disabled = false;
+  bakubakuQuitBtn.disabled = true;
+
+  highlightBakubakuRule(elapsedSec);
+  const earned = getBakubakuPoints(elapsedSec);
+  bakubakuResult.style.display = 'block';
+  bakubakuResult.classList.remove('celebrate');
+  if (earned > 0) {
+    const cheers = {
+      20: ['すごすぎる！！', 'ロケットなみ！！', 'てんさい！！'],
+      16: ['はやーい！！', 'かっこいい！！', 'やるね！！'],
+      12: ['いいかんじ！！', 'がんばった！！', 'ナイス！！'],
+      8: ['よくできました！', 'えらい！！', 'がんばったね！'],
+      4: ['さいごまで がんばった！', 'えらいぞ！'],
+      2: ['ぎりぎり セーフ！', 'よく がんばった！']
+    }[earned];
+    const cheer = cheers[Math.floor(Math.random() * cheers.length)];
+    bakubakuResult.innerHTML =
+      '<div class="result-title">🎉 やったー！ 🎉</div>' +
+      '<div class="result-cheer">' + cheer + '</div>' +
+      '<div class="result-points">⭐ ' + earned + 'P ゲット！ ⭐</div>' +
+      '<div class="result-time">' + formatBakubakuElapsed(elapsedSec) + ' で たべおわったよ！</div>';
+    // アニメーションを毎回やりなおす
+    void bakubakuResult.offsetWidth;
+    bakubakuResult.classList.add('celebrate');
+    launchBakubakuConfetti();
+    points += earned;
+    updatePointsDisplay();
+    await savePoints();
+  } else {
+    bakubakuResult.innerHTML =
+      '<div class="result-title">⏰ じかん ぎれ…</div>' +
+      '<div class="result-time">つぎは もっと はやく たべてみよう！</div>';
+  }
+}
+
+function formatBakubakuElapsed(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (m === 0) return s + 'びょう';
+  if (s === 0) return m + 'ふん';
+  return m + 'ふん ' + s + 'びょう';
+}
+
+// かみふぶきを ふらせる
+function launchBakubakuConfetti() {
+  const items = ['🎉', '⭐', '✨', '🎊', '🌟', '💖', '🍚'];
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('span');
+    piece.className = 'bakubaku-confetti';
+    piece.textContent = items[Math.floor(Math.random() * items.length)];
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.fontSize = (1.2 + Math.random() * 1.6) + 'em';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.animationDelay = Math.random() * 0.8 + 's';
+    bakubakuModal.appendChild(piece);
+    piece.addEventListener('animationend', () => piece.remove());
+  }
+}
+
+function stopBakubaku() {
+  if (!bakubakuStartTime) return;
+  const elapsedSec = getBakubakuElapsedSec();
+  finishBakubaku(Math.min(elapsedSec, BAKUBAKU_LIMIT_SEC));
+}
+
+function showBakubakuModal() {
+  resetBakubaku();
+  bakubakuModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideBakubakuModal() {
+  resetBakubaku();
+  bakubakuModal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('bakubakuBtn').addEventListener('click', showBakubakuModal);
+bakubakuStartBtn.addEventListener('click', startBakubaku);
+bakubakuPauseBtn.addEventListener('click', pauseBakubaku);
+bakubakuStopBtn.addEventListener('click', stopBakubaku);
+bakubakuCloseBtn.addEventListener('click', hideBakubakuModal);
+// とちゅうでおわる：かくにんしてから、ポイントは はいらずに とじる
+const bakubakuQuitConfirmModal = document.getElementById('bakubakuQuitConfirmModal');
+// かくにんちゅうは タイマーを とめておく
+let bakubakuPausedByQuitConfirm = false;
+bakubakuQuitBtn.addEventListener('click', () => {
+  bakubakuPausedByQuitConfirm = !!bakubakuStartTime;
+  if (bakubakuPausedByQuitConfirm) {
+    pauseBakubaku();
+  }
+  bakubakuQuitConfirmModal.classList.add('show');
+});
+document.getElementById('bakubakuQuitOkBtn').addEventListener('click', () => {
+  bakubakuQuitConfirmModal.classList.remove('show');
+  bakubakuPausedByQuitConfirm = false;
+  hideBakubakuModal();
+});
+document.getElementById('bakubakuQuitCancelBtn').addEventListener('click', () => {
+  bakubakuQuitConfirmModal.classList.remove('show');
+  // うごいていたときだけ さいかい（もともと いちじていし ちゅうなら そのまま）
+  if (bakubakuPausedByQuitConfirm) {
+    resumeBakubaku();
+  }
+  bakubakuPausedByQuitConfirm = false;
+});
+// 背景タップでは閉じない・iOSで背景がスクロールしないようにする（ダイアログの中はスクロールできる）
+bakubakuModal.addEventListener('touchmove', e => {
+  if (!e.target.closest('.bakubaku-content')) {
+    e.preventDefault();
+  }
+}, { passive: false });
 
 reloadBtn.addEventListener('click', () => {
   location.reload();

@@ -22,7 +22,10 @@
           🌙 夕方〜夜の時間帯！ポイント2倍中！ 🌙
         </div>
         <div class="task-buttons-container">
-          <button id="belongingsBtn" class="belongings-btn">📋 おでかけまえチェック</button>
+          <div class="main-buttons-row">
+            <button id="belongingsBtn" class="belongings-btn">📋 おでかけまえチェック</button>
+            <button id="bakubakuBtn" class="bakubaku-btn">🍚 バクバクチャレンジ</button>
+          </div>
           <div id="quickTaskButtons" style="display: none;" class="quick-task-buttons">
             <button id="morningTaskBtn" class="morning-task-btn">🌅 朝のタスク</button>
             <button id="nightTaskBtn" class="night-task-btn">🌙 夜のタスク</button>
@@ -62,7 +65,7 @@
             <div class="reward-icon">💵</div>
             <div class="reward-details">
               <div class="reward-name">100円</div>
-              <div class="reward-cost">30P</div>
+              <div class="reward-cost">20P</div>
             </div>
           </button>
         </div>
@@ -98,6 +101,44 @@
         <div class="belongings-buttons">
           <button id="clearAllBelongingsBtn" class="clear-all-btn">クリア</button>
           <button id="belongingsCloseBtn" class="belongings-close-btn">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- バクバクチャレンジモーダル -->
+    <div id="bakubakuModal" class="modal bakubaku-modal">
+      <div class="modal-content bakubaku-content">
+        <h2>🍚 バクバクチャレンジ</h2>
+        <p class="bakubaku-subtitle">ごはんを20ふんいないに食べおわろう！</p>
+        <div id="bakubakuTimer" class="bakubaku-timer">20:00</div>
+        <div id="bakubakuResult" class="bakubaku-result" style="display: none;"></div>
+        <div class="bakubaku-buttons">
+          <button id="bakubakuStartBtn" class="bakubaku-start-btn">▶️ スタート</button>
+          <button id="bakubakuPauseBtn" class="bakubaku-pause-btn" disabled>⏸️ いちじていし</button>
+          <button id="bakubakuStopBtn" class="bakubaku-stop-btn" disabled>⏹️ ストップ</button>
+        </div>
+        <ul id="bakubakuRules" class="bakubaku-rules">
+          <li data-max="600"><span class="rule-time">🚀 のこり 10ぷん まで</span><span class="rule-point">20P</span></li>
+          <li data-max="720"><span class="rule-time">🐇 のこり 8ぷん まで</span><span class="rule-point">16P</span></li>
+          <li data-max="840"><span class="rule-time">🐕 のこり 6ぷん まで</span><span class="rule-point">12P</span></li>
+          <li data-max="960"><span class="rule-time">🐈 のこり 4ぷん まで</span><span class="rule-point">8P</span></li>
+          <li data-max="1080"><span class="rule-time">🐢 のこり 2ふん まで</span><span class="rule-point">4P</span></li>
+          <li data-max="1199"><span class="rule-time">🐌 さいご まで</span><span class="rule-point">2P</span></li>
+        </ul>
+        <div class="bakubaku-bottom-buttons">
+          <button id="bakubakuCloseBtn" class="bakubaku-close-btn">とじる</button>
+          <button id="bakubakuQuitBtn" class="bakubaku-quit-btn" disabled>とちゅうでおわる</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- バクバクチャレンジ とちゅうでおわる確認モーダル -->
+    <div id="bakubakuQuitConfirmModal" class="modal">
+      <div class="modal-content confirm-content">
+        <p>チャレンジとちゅうだけど<br>おわってもいい？</p>
+        <div class="modal-buttons">
+          <button id="bakubakuQuitOkBtn" class="confirm-btn confirm-ok">おわり</button>
+          <button id="bakubakuQuitCancelBtn" class="confirm-btn confirm-cancel">つづける</button>
         </div>
       </div>
     </div>
