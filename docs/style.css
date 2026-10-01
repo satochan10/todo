@@ -1393,3 +1393,91 @@ body.admin-mode .belongings-btn {
     font-size: 1em;
   }
 }
+
+/* ヘルプ */
+.help-button-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.help-btn {
+  padding: 8px 20px;
+  font-size: 1em;
+  background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.help-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+}
+
+.help-content {
+  width: 90%;
+  max-width: 640px;
+  padding: 24px;
+}
+
+.help-video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #000;
+}
+
+.help-video-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.help-close-btn {
+  padding: 12px 40px;
+  font-size: 1em;
+  background: #b0bec5;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+}
+
+/* ヘルプダイアログは うしろの バクバクチャレンジを さわれるようにする */
+.help-modal {
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.help-modal .help-content {
+  pointer-events: auto;
+}
+
+.help-content.dragged {
+  position: fixed;
+  margin: 0;
+  animation: none;
+}
+
+.help-drag-handle {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.help-drag-handle:active {
+  cursor: grabbing;
+}

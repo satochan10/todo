@@ -1039,11 +1039,25 @@ function launchBakubakuConfetti() {
   }
 }
 
+// ストップ：「食べ終わりましたか？」をかくにんしてから おわる
+const bakubakuStopConfirmModal = document.getElementById('bakubakuStopConfirmModal');
+
 function stopBakubaku() {
   if (!bakubakuStartTime) return;
+  // かくにんちゅうは タイマーを とめておく
+  pauseBakubaku();
+  bakubakuStopConfirmModal.classList.add('show');
+}
+
+document.getElementById('bakubakuStopOkBtn').addEventListener('click', () => {
+  bakubakuStopConfirmModal.classList.remove('show');
   const elapsedSec = getBakubakuElapsedSec();
   finishBakubaku(Math.min(elapsedSec, BAKUBAKU_LIMIT_SEC));
-}
+});
+document.getElementById('bakubakuStopCancelBtn').addEventListener('click', () => {
+  bakubakuStopConfirmModal.classList.remove('show');
+  resumeBakubaku();
+});
 
 function showBakubakuModal() {
   resetBakubaku();
@@ -1053,6 +1067,7 @@ function showBakubakuModal() {
 
 function hideBakubakuModal() {
   resetBakubaku();
+  hideHelpModal();
   bakubakuModal.classList.remove('show');
   document.body.style.overflow = '';
 }
@@ -1092,6 +1107,123 @@ bakubakuModal.addEventListener('touchmove', e => {
     e.preventDefault();
   }
 }, { passive: false });
+
+// ヘルプ動画
+// ちろぴの（https://www.youtube.com/@tiropino）のアップロード動画プレイリスト
+// チャンネルID「UC...」の先頭を「UU」に変えたものがアップロード動画のプレイリストID
+const HELP_PLAYLIST_ID = 'UUBliDcAvBxDy-RWoKl5ZHSA';
+const helpModal = document.getElementById('helpModal');
+const helpVideoWrapper = document.getElementById('helpVideoWrapper');
+let helpPlayer = null;
+
+function showHelpModal() {
+  helpModal.classList.add('show');
+  helpVideoWrapper.innerHTML = '<div id="helpVideo"></div>';
+  if (!window.YT || !YT.Player) {
+    // APIが読みこめなかったときは さいしんの動画から ふつうに再生する
+    helpVideoWrapper.innerHTML = '<iframe title="ヘルプ動画" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen src="https://www.youtube-nocookie.com/embed/videoseries?list=' + HELP_PLAYLIST_ID + '&rel=0&playsinline=1"></iframe>';
+    return;
+  }
+  // プレイリストの中から ランダムに 1本えらんで 再生する
+  let picked = false;
+  const playRandom = () => {
+    if (picked || !helpPlayer) return;
+    const list = helpPlayer.getPlaylist();
+    if (!list || list.length === 0) return;
+    picked = true;
+    helpPlayer.playVideoAt(Math.floor(Math.random() * list.length));
+  };
+  helpPlayer = new YT.Player('helpVideo', {
+    host: 'https://www.youtube-nocookie.com',
+    playerVars: {
+      listType: 'playlist',
+      list: HELP_PLAYLIST_ID,
+      rel: 0,
+      playsinline: 1
+    },
+    events: {
+      onReady: playRandom,
+      // onReadyの時点で プレイリストが まだ とれないことがあるので ここでも ためす
+      onStateChange: playRandom
+    }
+  });
+}
+
+function hideHelpModal() {
+  // プレイヤーを けして 再生を止める
+  if (helpPlayer) {
+    helpPlayer.destroy();
+    helpPlayer = null;
+  }
+  helpVideoWrapper.innerHTML = '';
+  helpModal.classList.remove('show');
+  // 次に開いたときは まんなかに もどす
+  helpContent.classList.remove('dragged');
+  helpContent.style.left = '';
+  helpContent.style.top = '';
+}
+
+// ヘルプは ポイントを つかって みる
+const HELP_COST = 5;
+const helpConfirmModal = document.getElementById('helpConfirmModal');
+const helpConfirmMessage = document.getElementById('helpConfirmMessage');
+const helpConfirmOkBtn = document.getElementById('helpConfirmOkBtn');
+const helpConfirmCancelBtn = document.getElementById('helpConfirmCancelBtn');
+
+document.getElementById('helpBtn').addEventListener('click', () => {
+  if (points >= HELP_COST) {
+    helpConfirmMessage.innerHTML = HELP_COST + 'Pつかって<br>youtubeをみますか？';
+    helpConfirmOkBtn.style.display = '';
+    helpConfirmCancelBtn.textContent = 'いいえ';
+  } else {
+    helpConfirmMessage.innerHTML = 'ポイントがたりないよ<br>（' + HELP_COST + 'P ひつよう・いま ' + points + 'P）';
+    helpConfirmOkBtn.style.display = 'none';
+    helpConfirmCancelBtn.textContent = 'とじる';
+  }
+  helpConfirmModal.classList.add('show');
+});
+helpConfirmOkBtn.addEventListener('click', async () => {
+  helpConfirmModal.classList.remove('show');
+  if (points < HELP_COST) return;
+  points -= HELP_COST;
+  updatePointsDisplay();
+  showHelpModal();
+  await savePoints();
+});
+helpConfirmCancelBtn.addEventListener('click', () => {
+  helpConfirmModal.classList.remove('show');
+});
+document.getElementById('helpCloseBtn').addEventListener('click', hideHelpModal);
+
+// ヘルプダイアログは タイトルを つかんで うごかせる（マウス・タッチ両対応）
+const helpContent = helpModal.querySelector('.help-content');
+const helpDragHandle = document.getElementById('helpDragHandle');
+let helpDragOffsetX = 0;
+let helpDragOffsetY = 0;
+
+function moveHelpContent(left, top) {
+  // タイトルが がめんの そとに でないようにする
+  const handleHeight = helpDragHandle.offsetHeight;
+  const maxLeft = window.innerWidth - helpContent.offsetWidth;
+  const maxTop = window.innerHeight - handleHeight;
+  helpContent.style.left = Math.min(Math.max(left, Math.min(0, maxLeft)), Math.max(0, maxLeft)) + 'px';
+  helpContent.style.top = Math.min(Math.max(top, 0), Math.max(0, maxTop)) + 'px';
+}
+
+helpDragHandle.addEventListener('pointerdown', e => {
+  const rect = helpContent.getBoundingClientRect();
+  helpDragOffsetX = e.clientX - rect.left;
+  helpDragOffsetY = e.clientY - rect.top;
+  helpContent.classList.add('dragged');
+  moveHelpContent(rect.left, rect.top);
+  // 動画の上に ゆびが のっても ドラッグが とぎれないようにする
+  helpDragHandle.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+helpDragHandle.addEventListener('pointermove', e => {
+  if (!helpDragHandle.hasPointerCapture(e.pointerId)) return;
+  moveHelpContent(e.clientX - helpDragOffsetX, e.clientY - helpDragOffsetY);
+});
 
 reloadBtn.addEventListener('click', () => {
   location.reload();

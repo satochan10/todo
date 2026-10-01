@@ -110,6 +110,9 @@
       <div class="modal-content bakubaku-content">
         <h2>🍚 バクバクチャレンジ</h2>
         <p class="bakubaku-subtitle">ごはんを20ふんいないに食べおわろう！</p>
+        <div class="help-button-row">
+          <button id="helpBtn" class="help-btn">❓ ヘルプ</button>
+        </div>
         <div id="bakubakuTimer" class="bakubaku-timer">20:00</div>
         <div id="bakubakuResult" class="bakubaku-result" style="display: none;"></div>
         <div class="bakubaku-buttons">
@@ -132,6 +135,16 @@
       </div>
     </div>
 
+    <!-- ヘルプ動画モーダル -->
+    <div id="helpModal" class="modal help-modal">
+      <div class="modal-content help-content">
+        <h2 id="helpDragHandle" class="help-drag-handle">❓ ヘルプ</h2>
+        <div id="helpVideoWrapper" class="help-video-wrapper">
+        </div>
+        <button id="helpCloseBtn" class="help-close-btn">とじる</button>
+      </div>
+    </div>
+
     <!-- バクバクチャレンジ とちゅうでおわる確認モーダル -->
     <div id="bakubakuQuitConfirmModal" class="modal">
       <div class="modal-content confirm-content">
@@ -139,6 +152,28 @@
         <div class="modal-buttons">
           <button id="bakubakuQuitOkBtn" class="confirm-btn confirm-ok">おわり</button>
           <button id="bakubakuQuitCancelBtn" class="confirm-btn confirm-cancel">つづける</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- バクバクチャレンジ ストップ確認モーダル -->
+    <div id="bakubakuStopConfirmModal" class="modal">
+      <div class="modal-content confirm-content">
+        <p>たべおわりましたか？</p>
+        <div class="modal-buttons">
+          <button id="bakubakuStopOkBtn" class="confirm-btn confirm-ok">はい</button>
+          <button id="bakubakuStopCancelBtn" class="confirm-btn confirm-cancel">いいえ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ヘルプ ポイントかくにんモーダル -->
+    <div id="helpConfirmModal" class="modal">
+      <div class="modal-content confirm-content">
+        <p id="helpConfirmMessage"></p>
+        <div class="modal-buttons">
+          <button id="helpConfirmOkBtn" class="confirm-btn confirm-ok">はい</button>
+          <button id="helpConfirmCancelBtn" class="confirm-btn confirm-cancel">いいえ</button>
         </div>
       </div>
     </div>
@@ -202,6 +237,9 @@
   <!-- Firebase SDK (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <!-- YouTube IFrame Player API（ヘルプ動画をランダム再生するため） -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script src="script.js"></script>
 </body>
