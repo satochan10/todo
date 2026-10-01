@@ -28,7 +28,13 @@ let nightTasks = [];
 const characters = [
   '🐚', '🦀', '🦞', '🐙', '🦑', '🐠', '🐡', '🦈', '🐳', '👑',
   '🌊', '🐟', '🦐', '🦪', '🪼', '🧜', '💎', '⭐', '🌟', '✨',
-  '🎆', '🎇', '🌅', '🏆', '🔱', '⚜️', '🦑', '🐠', '🦈', '🚀'
+  '🎆', '🎇', '🌅', '🏆', '🔱', '⚜️', '🐬', '🦭', '🐢', '🚀'
+];
+// ずかんに 出す なまえ（characters と おなじ じゅんばん）
+const characterNames = [
+  'かいがら', 'カニ', 'ロブスター', 'タコ', 'イカ', 'ねったいぎょ', 'フグ', 'サメ', 'クジラ', 'おうかん',
+  'なみ', 'さかな', 'エビ', 'カキ', 'クラゲ', 'にんぎょ', 'ほうせき', 'ほし', 'きらきらぼし', 'きらきら',
+  'はなび', 'せんこうはなび', 'あさひ', 'トロフィー', 'うみのほこ', 'もんしょう', 'イルカ', 'アザラシ', 'ウミガメ', 'ロケット'
 ];
 
 const todoInput = document.getElementById('todoInput');
@@ -224,6 +230,51 @@ async function earnPoints(amount) {
   }
   await savePoints();
 }
+
+// キャラずかん：あつめた キャラは なまえつき、まだの キャラは シークレット（なにも 見せない）
+const zukanModal = document.getElementById('zukanModal');
+
+function showZukanModal() {
+  const stage = getStage(totalPoints);
+  document.getElementById('zukanProgress').textContent =
+    'あつめた かず：' + (stage + 1) + ' / ' + characters.length;
+  const grid = document.getElementById('zukanGrid');
+  grid.innerHTML = '';
+  characters.forEach((character, i) => {
+    const card = document.createElement('div');
+    card.className = 'zukan-card';
+    let label;
+    if (i <= stage) {
+      label = characterNames[i];
+      if (i === stage) card.classList.add('current');
+    } else {
+      card.classList.add('locked');
+      label = i === stage + 1
+        ? 'あと ' + (getStageThreshold(i) - totalPoints) + 'P'
+        : 'シークレット';
+      if (i === stage + 1) card.classList.add('next');
+    }
+    card.innerHTML =
+      '<div class="zukan-no">No.' + (i + 1) + '</div>' +
+      '<div class="zukan-emoji">' + (i <= stage ? character : '？') + '</div>' +
+      '<div class="zukan-name">' + label + '</div>';
+    grid.appendChild(card);
+  });
+  zukanModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  zukanModal.querySelector('.zukan-content').scrollTop = 0;
+}
+
+function hideZukanModal() {
+  zukanModal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('zukanBtn').addEventListener('click', showZukanModal);
+document.getElementById('zukanCloseBtn').addEventListener('click', hideZukanModal);
+zukanModal.addEventListener('click', e => {
+  if (e.target === zukanModal) hideZukanModal();
+});
 
 // しんかの おいわい
 const evolveModal = document.getElementById('evolveModal');

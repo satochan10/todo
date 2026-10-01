@@ -1652,3 +1652,113 @@ body.admin-mode .belongings-btn {
   font-family: "Comic Sans MS", cursive;
   font-weight: bold;
 }
+
+/* キャラずかん */
+.zukan-btn {
+  display: block;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  background: linear-gradient(135deg, #ba68c8 0%, #f48fb1 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.zukan-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(186, 104, 200, 0.4);
+}
+
+.zukan-content {
+  width: 90%;
+  max-width: 560px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+
+.zukan-content .zukan-progress {
+  font-weight: bold;
+  color: #8e24aa;
+  margin-bottom: 14px;
+}
+
+.zukan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.zukan-card {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  border: 3px solid #4dd0e1;
+  border-radius: 16px;
+  padding: 8px 4px;
+}
+
+.zukan-card.current {
+  background: linear-gradient(135deg, #fff9c4 0%, #ffe082 100%);
+  border-color: #ffb300;
+  box-shadow: 0 0 12px rgba(255, 179, 0, 0.6);
+}
+
+.zukan-card.locked {
+  background: #eceff1;
+  border-color: #cfd8dc;
+}
+
+.zukan-card.next {
+  border-style: dashed;
+  border-color: #ba68c8;
+}
+
+.zukan-no {
+  font-size: 0.75em;
+  color: #78909c;
+  font-weight: bold;
+}
+
+.zukan-emoji {
+  font-size: 2.6em;
+  line-height: 1.3;
+}
+
+/* まだの キャラは シークレット */
+.zukan-card.locked .zukan-emoji {
+  color: #b0bec5;
+  font-weight: bold;
+}
+
+.zukan-name {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #006064;
+  word-break: keep-all;
+}
+
+.zukan-card.locked .zukan-name {
+  color: #90a4ae;
+}
+
+.zukan-card.next .zukan-name {
+  color: #8e24aa;
+}
+
+.zukan-close-btn {
+  padding: 12px 40px;
+  font-size: 1em;
+  background: #b0bec5;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-family: "Comic Sans MS", cursive;
+  font-weight: bold;
+}
+
