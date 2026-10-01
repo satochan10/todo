@@ -1762,3 +1762,9 @@ body.admin-mode .belongings-btn {
   font-weight: bold;
 }
 
+/* がぞうの キャラ：絵文字と おなじように まわりの font-size で おおきさが きまる */
+.character-img {
+  height: 1.5em;
+  width: auto;
+  vertical-align: middle;
+}

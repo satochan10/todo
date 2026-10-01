@@ -24,18 +24,62 @@ let belongings = [];
 let morningTasks = [];
 let nightTasks = [];
 
-// キャラクター進化ステージ（海の生き物）
-const characters = [
-  '🐚', '🦀', '🦞', '🐙', '🦑', '🐠', '🐡', '🦈', '🐳', '👑',
-  '🌊', '🐟', '🦐', '🦪', '🪼', '🧜', '💎', '⭐', '🌟', '✨',
-  '🎆', '🎇', '🌅', '🏆', '🔱', '⚜️', '🐬', '🦭', '🐢', '🚀'
+// キャラクター進化ステージ：[キャラ, ずかんの なまえ]
+// .png で おわるものは がぞうとして 出す。おしごとキャラ（がぞう）は No.10 いこうに ランダムに ちりばめている
+// （No.1〜9 は ならびを かえた ときに もう あつめていた ぶんなので うごかさない）
+const characterList = [
+  ['🐚', 'かいがら'],
+  ['🦀', 'カニ'],
+  ['🦞', 'ロブスター'],
+  ['🐙', 'タコ'],
+  ['🦑', 'イカ'],
+  ['🐠', 'ねったいぎょ'],
+  ['🐡', 'フグ'],
+  ['🦈', 'サメ'],
+  ['🐳', 'クジラ'],
+  ['👑', 'おうかん'],
+  ['🌊', 'なみ'],
+  ['images/characters/07-astronaut.png', 'うちゅうひこうし'],
+  ['images/characters/10-firefighter.png', 'しょうぼうしさん'],
+  ['images/characters/09-fisherman.png', 'りょうしさん'],
+  ['🐟', 'さかな'],
+  ['images/characters/01-chef.png', 'コックさん'],
+  ['🦐', 'エビ'],
+  ['🦪', 'カキ'],
+  ['🪼', 'クラゲ'],
+  ['images/characters/06-police.png', 'おまわりさん'],
+  ['images/characters/04-baker.png', 'パンやさん'],
+  ['🧜', 'にんぎょ'],
+  ['💎', 'ほうせき'],
+  ['⭐', 'ほし'],
+  ['🌟', 'きらきらぼし'],
+  ['✨', 'きらきら'],
+  ['🎆', 'はなび'],
+  ['🎇', 'せんこうはなび'],
+  ['images/characters/02-doctor.png', 'おいしゃさん'],
+  ['🌅', 'あさひ'],
+  ['🏆', 'トロフィー'],
+  ['🔱', 'うみのほこ'],
+  ['images/characters/05-farmer.png', 'のうかさん'],
+  ['⚜️', 'もんしょう'],
+  ['🐬', 'イルカ'],
+  ['🦭', 'アザラシ'],
+  ['images/characters/03-carpenter.png', 'だいくさん'],
+  ['🐢', 'ウミガメ'],
+  ['🚀', 'ロケット'],
+  ['images/characters/08-conductor.png', 'しゃしょうさん']
 ];
-// ずかんに 出す なまえ（characters と おなじ じゅんばん）
-const characterNames = [
-  'かいがら', 'カニ', 'ロブスター', 'タコ', 'イカ', 'ねったいぎょ', 'フグ', 'サメ', 'クジラ', 'おうかん',
-  'なみ', 'さかな', 'エビ', 'カキ', 'クラゲ', 'にんぎょ', 'ほうせき', 'ほし', 'きらきらぼし', 'きらきら',
-  'はなび', 'せんこうはなび', 'あさひ', 'トロフィー', 'うみのほこ', 'もんしょう', 'イルカ', 'アザラシ', 'ウミガメ', 'ロケット'
-];
+const characters = characterList.map(([character]) => character);
+const characterNames = characterList.map(([, name]) => name);
+
+// キャラを 表示する HTML（絵文字は そのまま、がぞうは <img>。おおきさは まわりの font-size に あわせる）
+function characterHtml(stage) {
+  const character = characters[stage];
+  if (character.endsWith('.png')) {
+    return '<img class="character-img" src="' + character + '" alt="' + characterNames[stage] + '">';
+  }
+  return character;
+}
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -256,7 +300,7 @@ function showZukanModal() {
     }
     card.innerHTML =
       '<div class="zukan-no">No.' + (i + 1) + '</div>' +
-      '<div class="zukan-emoji">' + (i <= stage ? character : '？') + '</div>' +
+      '<div class="zukan-emoji">' + (i <= stage ? characterHtml(i) : '？') + '</div>' +
       '<div class="zukan-name">' + label + '</div>';
     grid.appendChild(card);
   });
@@ -282,8 +326,8 @@ const evolveModal = document.getElementById('evolveModal');
 function showEvolveModal(fromStage, toStage) {
   const evolveFrom = document.getElementById('evolveFrom');
   const evolveTo = document.getElementById('evolveTo');
-  evolveFrom.textContent = characters[fromStage];
-  evolveTo.textContent = characters[toStage];
+  evolveFrom.innerHTML = characterHtml(fromStage);
+  evolveTo.innerHTML = characterHtml(toStage);
   document.getElementById('evolveLevel').textContent = 'レベル ' + (toStage + 1) + ' に なったよ！';
   document.getElementById('evolveNext').textContent = toStage >= characters.length - 1
     ? '👑 さいごまで しんかした！ すごい！'
@@ -293,7 +337,7 @@ function showEvolveModal(fromStage, toStage) {
   void evolveModal.offsetWidth;
   evolveModal.classList.add('show', 'animate');
   // キャラが かわる タイミングで かみふぶき
-  setTimeout(() => launchConfetti(evolveModal, ['✨', '⭐', '🌟', '🎉', '🎊', characters[toStage]]), 1500);
+  setTimeout(() => launchConfetti(evolveModal, ['✨', '⭐', '🌟', '🎉', '🎊', characterHtml(toStage)]), 1500);
 }
 
 document.getElementById('evolveCloseBtn').addEventListener('click', () => {
@@ -327,7 +371,7 @@ function getStage(total) {
 function updatePointsDisplay() {
   const stage = getStage(totalPoints);
   pointsCount.textContent = points;
-  document.getElementById('characterSpan').textContent = characters[stage];
+  document.getElementById('characterSpan').innerHTML = characterHtml(stage);
   document.getElementById('levelCount').textContent = stage + 1;
   document.getElementById('totalPointsCount').textContent = totalPoints;
   const growthBarFill = document.getElementById('growthBarFill');
@@ -1149,7 +1193,7 @@ function launchConfetti(container, items) {
   for (let i = 0; i < 40; i++) {
     const piece = document.createElement('span');
     piece.className = 'bakubaku-confetti';
-    piece.textContent = items[Math.floor(Math.random() * items.length)];
+    piece.innerHTML = items[Math.floor(Math.random() * items.length)];
     piece.style.left = Math.random() * 100 + 'vw';
     piece.style.fontSize = (1.2 + Math.random() * 1.6) + 'em';
     piece.style.animationDuration = (2 + Math.random() * 2) + 's';
