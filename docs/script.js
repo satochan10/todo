@@ -15,7 +15,10 @@ let todos = [];
 let currentFilter = 'all';
 let isLoading = false;
 let isAdminMode = false;
+// points：つかえるポイント（おさいふ。とくてん・ヘルプで へる）
+// totalPoints：これまでに あつめた ポイント（せいちょう。へらない。キャラの しんかに つかう）
 let points = 0;
+let totalPoints = 0;
 let draggedTodo = null;
 let belongings = [];
 let morningTasks = [];
@@ -189,25 +192,36 @@ async function addQuickTasksToTodo(taskType) {
 // ポイント管理
 function loadPoints() {
   db.collection('app').doc('settings').onSnapshot(doc => {
-    if (doc.exists) {
-      points = doc.data().points || 0;
+    const data = doc.exists ? doc.data() : {};
+    points = data.points || 0;
+    if (data.totalPoints === undefined) {
+      // 2種類に分ける前のデータ：いまの ポイントを せいちょうポイントの スタートにする
+      totalPoints = points;
+      savePoints();
     } else {
-      points = 0;
+      totalPoints = data.totalPoints;
     }
     updatePointsDisplay();
-    console.log('ポイント読み込み:', points);
+    console.log('ポイント読み込み:', points, 'せいちょう:', totalPoints);
   }, error => {
     console.error('ポイント読み込みエラー:', error);
     points = 0;
+    totalPoints = 0;
     updatePointsDisplay();
   });
 }
 
-async function addPoints(amount = 1) {
-  const multiplier = isMorningBonus() ? 2 : 1;
-  points += amount * multiplier;
+// ポイントを もらう（つかえるポイントと せいちょうポイントの りょうほうが ふえる）
+async function earnPoints(amount) {
+  points += amount;
+  totalPoints += amount;
   updatePointsDisplay();
   await savePoints();
+}
+
+async function addPoints(amount = 1) {
+  const multiplier = isMorningBonus() ? 2 : 1;
+  await earnPoints(amount * multiplier);
 }
 
 function isMorningBonus() {
@@ -215,20 +229,44 @@ function isMorningBonus() {
   return hour >= 18 && hour < 21;
 }
 
-function updatePointsDisplay() {
-  const level = Math.floor(points / 5);
-  const character = characters[Math.min(level, characters.length - 1)];
-  pointsCount.textContent = points;
-  const characterSpan = document.getElementById('characterSpan');
-  if (characterSpan) {
-    characterSpan.textContent = character;
+// しんかに ひつような ポイント：1だんめ 5P、2だんめ 10P、3だんめ 15P…と だんだん ふえる
+// stage だんめに なるには ごうけい 5 × stage × (stage + 1) / 2 ポイント ひつよう
+function getStageThreshold(stage) {
+  return 5 * stage * (stage + 1) / 2;
+}
+
+function getStage(total) {
+  let stage = 0;
+  while (stage < characters.length - 1 && total >= getStageThreshold(stage + 1)) {
+    stage++;
   }
+  return stage;
+}
+
+function updatePointsDisplay() {
+  const stage = getStage(totalPoints);
+  pointsCount.textContent = points;
+  document.getElementById('characterSpan').textContent = characters[stage];
+  document.getElementById('levelCount').textContent = stage + 1;
+  document.getElementById('totalPointsCount').textContent = totalPoints;
+  const growthBarFill = document.getElementById('growthBarFill');
+  const growthNext = document.getElementById('growthNext');
+  if (stage >= characters.length - 1) {
+    growthBarFill.style.width = '100%';
+    growthNext.textContent = '👑 さいごまで しんかした！';
+    return;
+  }
+  const from = getStageThreshold(stage);
+  const to = getStageThreshold(stage + 1);
+  growthBarFill.style.width = ((totalPoints - from) / (to - from) * 100) + '%';
+  growthNext.textContent = 'つぎの しんかまで あと ' + (to - totalPoints) + 'P';
 }
 
 async function savePoints() {
   try {
     await db.collection('app').doc('settings').set({
-      points: points
+      points: points,
+      totalPoints: totalPoints
     }, { merge: true });
     console.log('ポイント保存成功:', points);
   } catch (error) {
@@ -755,7 +793,7 @@ function checkPassword() {
 
 // 特典モーダル
 function showRewardsModal() {
-  currentPointsDisplay.innerHTML = '現在のポイント: <strong>' + points + '</strong>P';
+  currentPointsDisplay.innerHTML = '👛 つかえるポイント: <strong>' + points + '</strong>P';
   rewardsModal.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -1005,9 +1043,7 @@ async function finishBakubaku(elapsedSec) {
     void bakubakuResult.offsetWidth;
     bakubakuResult.classList.add('celebrate');
     launchBakubakuConfetti();
-    points += earned;
-    updatePointsDisplay();
-    await savePoints();
+    await earnPoints(earned);
   } else {
     bakubakuResult.innerHTML =
       '<div class="result-title">⏰ じかん ぎれ…</div>' +

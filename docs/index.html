@@ -16,7 +16,19 @@
       </div>
       <div class="points-display">
         <div id="pointsBadge" class="points-badge clickable">
-          ⭐ <span id="pointsCount">0</span> ポイント ⭐ <span id="characterSpan">🐚</span>
+          <div class="growth-section">
+            <span id="characterSpan">🐚</span>
+            <div class="growth-info">
+              <div class="growth-level">🌱 レベル <span id="levelCount">1</span></div>
+              <div class="growth-bar"><div id="growthBarFill" class="growth-bar-fill"></div></div>
+              <div id="growthNext" class="growth-next">つぎの しんかまで あと 5P</div>
+              <div class="growth-total">これまでに あつめた <span id="totalPointsCount">0</span>P</div>
+            </div>
+          </div>
+          <div class="wallet-section">
+            👛 つかえるポイント <span id="pointsCount">0</span>P
+            <span class="wallet-hint">タップで とくてん</span>
+          </div>
         </div>
         <div id="morningBonus" class="morning-bonus" style="display: none;">
           🌙 夕方〜夜の時間帯！ポイント2倍中！ 🌙
@@ -52,7 +64,7 @@
     <div id="rewardsModal" class="modal">
       <div class="modal-content rewards-content">
         <h2>🎁 ポイント特典</h2>
-        <p id="currentPoints">現在のポイント: <strong>0</strong>P</p>
+        <p id="currentPoints">👛 つかえるポイント: <strong>0</strong>P</p>
         <div class="rewards-list">
           <button id="youtubeReward" class="reward-item">
             <div class="reward-icon">📺</div>
